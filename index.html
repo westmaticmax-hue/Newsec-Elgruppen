@@ -305,6 +305,99 @@ textarea:focus{
   background:var(--ok);
 }
 
+
+/* ============================
+   IDAG-ÖVERSIKT
+   ============================ */
+
+.todayOverview{
+  display:none;
+  margin:0 12px 12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#f7f9fc;
+  overflow:hidden;
+}
+
+.todayOverview.visible{
+  display:block;
+}
+
+.todayOverviewHeader{
+  padding:13px 14px;
+  background:#eef1f8;
+  border-bottom:1px solid var(--line);
+}
+
+.todayOverviewHeader strong{
+  display:block;
+  font-size:16px;
+}
+
+.todayOverviewHeader span{
+  display:block;
+  margin-top:2px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.todayPerson{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:48px;
+  padding:8px 14px;
+  background:#fff;
+  border-bottom:1px solid #eceef2;
+}
+
+.todayPerson:last-child{
+  border-bottom:0;
+}
+
+.todayPersonName{
+  font-size:15px;
+  font-weight:700;
+}
+
+.todayPersonStatus{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.todayStatusDot{
+  width:13px;
+  height:13px;
+  border-radius:50%;
+}
+
+.todayStatusDot.ok{
+  background:var(--ok);
+}
+
+.todayStatusDot.part{
+  background:var(--part);
+}
+
+.todayStatusDot.no{
+  background:var(--no);
+}
+
+.todayClose{
+  margin-top:10px;
+  width:100%;
+  min-height:42px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#fff;
+  color:var(--ink);
+  font-weight:700;
+  cursor:pointer;
+}
+
 @media(max-width:420px){
 
   .hero{
@@ -323,6 +416,10 @@ textarea:focus{
     width:31px;
     height:31px;
   }
+
+  .todayPerson{
+    min-height:46px;
+  }
 }
 </style>
 </head>
@@ -336,7 +433,59 @@ textarea:focus{
     <p>Gemensam tillgänglighetskalender</p>
   </div>
 
+
   <div class="people" id="people"></div>
+
+
+  <!-- NY KNAPP -->
+  <div style="padding:0 12px 12px;">
+    <button
+      id="todayOverviewButton"
+      style="
+        width:100%;
+        min-height:44px;
+        border:1px solid #d8dce5;
+        border-radius:12px;
+        background:#f5f7fb;
+        color:#173b8f;
+        font-weight:750;
+        font-size:15px;
+        cursor:pointer;
+      ">
+      📅 Idag – visa allas status
+    </button>
+  </div>
+
+
+  <!-- NY ÖVERSIKT -->
+  <div
+    class="todayOverview"
+    id="todayOverview">
+
+    <div class="todayOverviewHeader">
+
+      <strong id="todayOverviewDate">
+        Idag
+      </strong>
+
+      <span>
+        Tillgänglighet för hela Elgruppen
+      </span>
+
+    </div>
+
+    <div id="todayOverviewPeople"></div>
+
+    <div style="padding:10px 14px;background:#fff;">
+      <button
+        class="todayClose"
+        id="todayClose">
+        Stäng
+      </button>
+    </div>
+
+  </div>
+
 
   <div class="calendar">
 
@@ -371,10 +520,12 @@ textarea:focus{
 
     </div>
 
+
     <div
       class="grid"
       id="days">
     </div>
+
 
     <div
       class="grid"
@@ -383,12 +534,19 @@ textarea:focus{
 
   </div>
 
+
   <div class="legend">
+
     <span>🟢 Tillgänglig</span>
+
     <span>🟡 Delvis</span>
+
     <span>🔴 Ej tillgänglig</span>
+
     <span>⬜ Helg</span>
+
   </div>
+
 
   <div class="note">
 
@@ -405,15 +563,18 @@ textarea:focus{
 
     </div>
 
+
     <div class="hint">
       Alla vardagar är tillgängliga tills någon anger annat.
     </div>
+
 
     <textarea
       id="note"
       maxlength="500"
       placeholder="Skriv en notering som alla i gruppen kan se…">
     </textarea>
+
 
     <div class="actions">
 
@@ -430,6 +591,7 @@ textarea:focus{
 
     </div>
 
+
     <div
       class="msg"
       id="msg"
@@ -437,6 +599,7 @@ textarea:focus{
     </div>
 
   </div>
+
 
   <div class="connection">
 
@@ -540,7 +703,7 @@ const dayNames = [
 
 
 /* =========================
-   APP STATE
+   STATE
    ========================= */
 
 let who = 0;
@@ -696,35 +859,8 @@ function getStatus(
 }
 
 
-function setStatus(
-  personName,
-  d,
-  status
-){
-
-  records.set(
-
-    docId(personName,d),
-
-    {
-      person:personName,
-      date:dateKey(d),
-      status:status,
-      note:
-        getRecord(
-          personName,
-          d
-        )?.note || "",
-      updatedAt:Date.now()
-    }
-
-  );
-
-}
-
-
 /* =========================
-   PERSONER
+   RENDER PERSONER
    ========================= */
 
 function renderPeople(){
@@ -781,7 +917,7 @@ function renderPeople(){
 
 
 /* =========================
-   RITA KALENDER
+   RENDER KALENDER
    ========================= */
 
 function render(){
@@ -797,6 +933,7 @@ function render(){
   end.setDate(
     end.getDate()+6
   );
+
 
   rangeEl.textContent =
     fmt(base)
@@ -827,8 +964,6 @@ function render(){
       i > 4;
 
 
-    /* DAGRUBRIK */
-
     const h =
       document.createElement(
         "div"
@@ -851,8 +986,6 @@ function render(){
 
     daysEl.appendChild(h);
 
-
-    /* DAGCELL */
 
     const c =
       document.createElement(
@@ -891,6 +1024,7 @@ function render(){
           d
         );
 
+
       let icon;
 
       if(s==="ok")
@@ -916,11 +1050,13 @@ function render(){
 
           selected = i;
 
+
           const current =
             getStatus(
               people[who][0],
               d
             );
+
 
           let next;
 
@@ -936,6 +1072,7 @@ function render(){
 
           const person =
             people[who][0];
+
 
           const ref =
             doc(
@@ -1105,6 +1242,118 @@ function loadNote(){
 
 
 /* =========================
+   IDAG-ÖVERSIKT
+   ========================= */
+
+function renderTodayOverview(){
+
+  const today =
+    new Date();
+
+  today.setHours(
+    12,0,0,0
+  );
+
+
+  const dateText =
+    today.toLocaleDateString(
+      "sv-SE",
+      {
+        weekday:"long",
+        day:"numeric",
+        month:"long",
+        year:"numeric"
+      }
+    );
+
+
+  document
+    .getElementById(
+      "todayOverviewDate"
+    )
+    .textContent =
+      "Idag · "
+      + dateText;
+
+
+  const container =
+    document.getElementById(
+      "todayOverviewPeople"
+    );
+
+
+  container.innerHTML = "";
+
+
+  people.forEach(
+    person=>{
+
+      const name =
+        person[0];
+
+      const s =
+        getStatus(
+          name,
+          today
+        );
+
+
+      let text;
+
+      if(s==="ok")
+        text="Tillgänglig";
+
+      else if(s==="part")
+        text="Delvis";
+
+      else
+        text="Ej tillgänglig";
+
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "todayPerson";
+
+
+      row.innerHTML =
+
+        '<span class="todayPersonName">'
+        + name
+        + '</span>'
+
+        +
+
+        '<span class="todayPersonStatus">'
+        +
+
+        '<span class="todayStatusDot '
+        + s
+        + '"></span>'
+
+        +
+
+        text
+
+        +
+
+        '</span>';
+
+
+      container.appendChild(
+        row
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
    MEDDELANDE
    ========================= */
 
@@ -1168,6 +1417,7 @@ function subscribe(){
         records =
           new Map();
 
+
         snapshot.forEach(
           docSnap=>{
 
@@ -1198,6 +1448,26 @@ function subscribe(){
 
 
         render();
+
+
+        /*
+         * Om Idag-översikten är öppen
+         * uppdateras den automatiskt.
+         */
+
+        if(
+          document
+            .getElementById(
+              "todayOverview"
+            )
+            .classList.contains(
+              "visible"
+            )
+        ){
+
+          renderTodayOverview();
+
+        }
 
       },
 
@@ -1281,6 +1551,46 @@ document
 
 
 /* =========================
+   IDAG-KNAPPEN
+   ========================= */
+
+document
+  .getElementById(
+    "todayOverviewButton"
+  )
+  .onclick = ()=>{
+
+    renderTodayOverview();
+
+    document
+      .getElementById(
+        "todayOverview"
+      )
+      .classList.add(
+        "visible"
+      );
+
+  };
+
+
+document
+  .getElementById(
+    "todayClose"
+  )
+  .onclick = ()=>{
+
+    document
+      .getElementById(
+        "todayOverview"
+      )
+      .classList.remove(
+        "visible"
+      );
+
+  };
+
+
+/* =========================
    HELA ARBETSVECKAN
    ========================= */
 
@@ -1338,7 +1648,8 @@ document
           {
             ...record,
             status:"ok",
-            updatedAt:Date.now()
+            updatedAt:
+              Date.now()
           }
         );
 
@@ -1357,9 +1668,11 @@ document
 
       await batch.commit();
 
+
       showMsg(
         "✓ Hela arbetsveckan är markerad som tillgänglig"
       );
+
 
       render();
 
@@ -1368,6 +1681,7 @@ document
     catch(error){
 
       console.error(error);
+
 
       showMsg(
         "Kunde inte spara veckan."
@@ -1400,6 +1714,7 @@ document
 
     const person =
       people[who][0];
+
 
     const text =
       noteEl.value.trim();
@@ -1461,14 +1776,35 @@ document
         "✓ Noteringen är sparad för gruppen"
       );
 
+
+      /*
+       * Om Idag-översikten är öppen
+       * uppdateras den.
+       */
+
+      if(
+        document
+          .getElementById(
+            "todayOverview"
+          )
+          .classList.contains(
+            "visible"
+          )
+      ){
+
+        renderTodayOverview();
+
+      }
+
     }
 
     catch(error){
 
       console.error(error);
 
+
       showMsg(
-        "Kunde inte spara noteringen. Kontrollera Firestore-reglerna."
+        "Kunde inte spara noteringen."
       );
 
     }
