@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#173b8f">
+<title>Newsec Elgruppen</title>
+
+<style>
+:root{
+  --ok:#22a86a;
+  --part:#e5a51f;
+  --no:#df5148;
+  --ink:#172033;
+  --muted:#687184;
+  --line:#d8dce5;
+  --accent:#173b8f;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#f4f6fa;
+  color:var(--ink);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+.app{
+  width:100%;
+  max-width:736px;
+  margin:0 auto;
+  background:#fff;
+  min-height:100vh;
+}
+
+.hero{
+  background:#173b8f;
+  color:#fff;
+  padding:20px;
+}
+
+.hero h1{
+  margin:0;
+  font-size:25px;
+  line-height:1.15;
+}
+
+.hero p{
+  margin:5px 0 0;
+  font-size:14px;
+  opacity:.9;
+}
+
+.people{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding:14px 12px 12px;
+  background:#fff;
+}
+
+.person{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  border-radius:22px;
+  padding:9px 14px;
+  min-height:44px;
+  white-space:nowrap;
+  cursor:pointer;
+}
+
+.person.active{
+  border:2px solid #315bd6;
+  font-weight:750;
+}
+
+.calendar{
+  margin:0 12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+  background:#fff;
+}
+
+.weekbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px;
+  background:#f5f7fb;
+}
+
+.weekbar>button{
+  width:42px;
+  height:42px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:11px;
+  font-size:23px;
+  cursor:pointer;
+}
+
+.weekcenter{
+  text-align:center;
+}
+
+.weeklabel{
+  font-weight:750;
+  font-size:15px;
+}
+
+.today{
+  margin-top:5px;
+  border:0;
+  background:#e9edff;
+  color:#173b8f;
+  border-radius:999px;
+  padding:5px 12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(35px,1fr));
+}
+
+.day{
+  padding:8px 2px;
+  text-align:center;
+  font-size:11px;
+  color:var(--muted);
+  border-right:1px solid #eceef2;
+  border-bottom:1px solid #eceef2;
+}
+
+.day b{
+  display:block;
+  color:var(--ink);
+  font-size:14px;
+  margin-top:2px;
+}
+
+.day.weekend{
+  background:#f1f2f4;
+  color:#a2a7b1;
+}
+
+.day.weekend b{
+  color:#a2a7b1;
+}
+
+.cell{
+  height:62px;
+  border:0;
+  border-right:1px solid #eceef2;
+  border-bottom:1px solid #eceef2;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.cell.weekend{
+  background:#f1f2f4;
+  cursor:default;
+}
+
+.cell.selected{
+  background:#eef1ff;
+}
+
+.mark{
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:17px;
+  font-weight:850;
+}
+
+.ok{
+  background:var(--ok);
+}
+
+.part{
+  background:var(--part);
+}
+
+.no{
+  background:var(--no);
+}
+
+.legend{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  padding:11px 15px 3px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.note{
+  margin:12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  padding:15px;
+}
+
+.notehead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.note h3{
+  margin:0;
+  font-size:16px;
+}
+
+.status{
+  font-size:12px;
+  font-weight:750;
+  padding:5px 9px;
+  border-radius:999px;
+}
+
+.hint{
+  font-size:12px;
+  color:var(--muted);
+  margin:6px 0 10px;
+}
+
+textarea{
+  width:100%;
+  min-height:78px;
+  border:1px solid #d3d7df;
+  border-radius:12px;
+  padding:11px 12px;
+  font-size:16px;
+  resize:vertical;
+  outline:none;
+}
+
+textarea:focus{
+  border-color:#315bd6;
+  box-shadow:0 0 0 3px #e9edff;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+  margin-top:9px;
+}
+
+.actions button{
+  min-height:44px;
+  border-radius:11px;
+  padding:0 13px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.save{
+  flex:1 !important;
+  background:var(--accent) !important;
+  color:#fff !important;
+  border:0 !important;
+}
+
+.msg{
+  font-size:12px;
+  color:#16804e;
+  min-height:17px;
+  margin-top:7px;
+}
+
+.connection{
+  padding:0 15px 16px;
+  font-size:11px;
+  color:var(--muted);
+  text-align:center;
+}
+
+.dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  margin-right:5px;
+  background:#aaa;
+}
+
+.dot.live{
+  background:var(--ok);
+}
+
+@media(max-width:420px){
+
+  .hero{
+    padding:17px;
+  }
+
+  .hero h1{
+    font-size:22px;
+  }
+
+  .cell{
+    height:56px;
+  }
+
+  .mark{
+    width:31px;
+    height:31px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="hero">
+    <h1>Newsec Elgruppen</h1>
+    <p>Gemensam tillgänglighetskalender</p>
+  </div>
+
+  <div class="people" id="people"></div>
+
+  <div class="calendar">
+
+    <div class="weekbar">
+
+      <button
+        id="prev"
+        aria-label="Föregående vecka">
+        ‹
+      </button>
+
+      <div class="weekcenter">
+
+        <div
+          class="weeklabel"
+          id="range">
+        </div>
+
+        <button
+          class="today"
+          id="today">
+          Idag
+        </button>
+
+      </div>
+
+      <button
+        id="next"
+        aria-label="Nästa vecka">
+        ›
+      </button>
+
+    </div>
+
+    <div
+      class="grid"
+      id="days">
+    </div>
+
+    <div
+      class="grid"
+      id="cells">
+    </div>
+
+  </div>
+
+  <div class="legend">
+    <span>🟢 Tillgänglig</span>
+    <span>🟡 Delvis</span>
+    <span>🔴 Ej tillgänglig</span>
+    <span>⬜ Helg</span>
+  </div>
+
+  <div class="note">
+
+    <div class="notehead">
+
+      <h3 id="noteTitle">
+        Notering
+      </h3>
+
+      <span
+        class="status"
+        id="status">
+      </span>
+
+    </div>
+
+    <div class="hint">
+      Alla vardagar är tillgängliga tills någon anger annat.
+    </div>
+
+    <textarea
+      id="note"
+      maxlength="500"
+      placeholder="Skriv en notering som alla i gruppen kan se…">
+    </textarea>
+
+    <div class="actions">
+
+      <button
+        id="week">
+        Hela arbetsveckan
+      </button>
+
+      <button
+        class="save"
+        id="save">
+        Spara notering
+      </button>
+
+    </div>
+
+    <div
+      class="msg"
+      id="msg"
+      aria-live="polite">
+    </div>
+
+  </div>
+
+  <div class="connection">
+
+    <span
+      class="dot"
+      id="connectionDot">
+    </span>
+
+    <span id="connectionText">
+      Ansluter till kalendern…
+    </span>
+
+  </div>
+
+</div>
+
+
+<script type="module">
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  deleteDoc,
+  onSnapshot,
+  collection,
+  query,
+  where,
+  writeBatch
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+/* =========================
+   FIREBASE
+   ========================= */
+
+const firebaseConfig = {
+
+  apiKey:
+    "AIzaSyDf6bd0Fi7PG4lOlVdw5Ie-mx3y20hn2ZY",
+
+  authDomain:
+    "newsec-elgruppen.firebaseapp.com",
+
+  projectId:
+    "newsec-elgruppen",
+
+  storageBucket:
+    "newsec-elgruppen.firebasestorage.app",
+
+  messagingSenderId:
+    "460978187079",
+
+  appId:
+    "1:460978187079:web:404760825c79fd218b7a62"
+
+};
+
+
+const app =
+  initializeApp(firebaseConfig);
+
+const db =
+  getFirestore(app);
+
+
+/* =========================
+   PERSONER
+   ========================= */
+
+const people = [
+
+  ["Pétur","#2878df"],
+
+  ["Niclas","#7354d8"],
+
+  ["Michael","#31a86a"],
+
+  ["Ivan","#ed8a1a"],
+
+  ["Max","#e56b9d"]
+
+];
+
+
+const dayNames = [
+
+  "Mån",
+  "Tis",
+  "Ons",
+  "Tor",
+  "Fre",
+  "Lör",
+  "Sön"
+
+];
+
+
+/* =========================
+   APP STATE
+   ========================= */
+
+let who = 0;
+
+let selected = 0;
+
+let weekOffset = 0;
+
+let records = new Map();
+
+let unsubscribe = null;
+
+
+/* =========================
+   ELEMENT
+   ========================= */
+
+const peopleEl =
+  document.getElementById("people");
+
+const daysEl =
+  document.getElementById("days");
+
+const cellsEl =
+  document.getElementById("cells");
+
+const rangeEl =
+  document.getElementById("range");
+
+const noteEl =
+  document.getElementById("note");
+
+const titleEl =
+  document.getElementById("noteTitle");
+
+const statusEl =
+  document.getElementById("status");
+
+const msgEl =
+  document.getElementById("msg");
+
+
+/* =========================
+   DATUM
+   ========================= */
+
+function monday(){
+
+  const d =
+    new Date();
+
+  d.setHours(12,0,0,0);
+
+  const day =
+    (d.getDay()+6)%7;
+
+  d.setDate(
+    d.getDate()
+    - day
+    + weekOffset*7
+  );
+
+  return d;
+
+}
+
+
+function dateKey(d){
+
+  return (
+
+    d.getFullYear()
+    + "-"
+    + String(
+        d.getMonth()+1
+      ).padStart(2,"0")
+    + "-"
+    + String(
+        d.getDate()
+      ).padStart(2,"0")
+
+  );
+
+}
+
+
+function docId(personName,d){
+
+  return (
+
+    personName
+    + "_"
+    + dateKey(d)
+
+  ).replace(
+    /[^A-Za-z0-9ÅÄÖåäöÉé_-]/g,
+    "_"
+  );
+
+}
+
+
+function fmt(d){
+
+  return (
+
+    d.getDate()
+    + " "
+    + d
+        .toLocaleDateString(
+          "sv-SE",
+          {month:"short"}
+        )
+        .replace(".","")
+
+  );
+
+}
+
+
+/* =========================
+   STATUS
+   ========================= */
+
+function getRecord(
+  personName,
+  d
+){
+
+  return (
+    records.get(
+      docId(personName,d)
+    )
+    || null
+  );
+
+}
+
+
+function getStatus(
+  personName,
+  d
+){
+
+  const record =
+    getRecord(
+      personName,
+      d
+    );
+
+  return record?.status || "ok";
+
+}
+
+
+function setStatus(
+  personName,
+  d,
+  status
+){
+
+  records.set(
+
+    docId(personName,d),
+
+    {
+      person:personName,
+      date:dateKey(d),
+      status:status,
+      note:
+        getRecord(
+          personName,
+          d
+        )?.note || "",
+      updatedAt:Date.now()
+    }
+
+  );
+
+}
+
+
+/* =========================
+   PERSONER
+   ========================= */
+
+function renderPeople(){
+
+  peopleEl.innerHTML = "";
+
+  people.forEach(
+    (p,i)=>{
+
+      const b =
+        document.createElement(
+          "button"
+        );
+
+      b.className =
+        "person"
+        + (
+            i===who
+            ? " active"
+            : ""
+          );
+
+      b.innerHTML =
+
+        '<span style="' +
+        'display:inline-block;' +
+        'width:9px;' +
+        'height:9px;' +
+        'border-radius:50%;' +
+        'background:'+p[1]+';' +
+        'margin-right:6px">' +
+        '</span>' +
+
+        p[0];
+
+      b.onclick = ()=>{
+
+        who = i;
+
+        selected = 0;
+
+        subscribe();
+
+        render();
+
+      };
+
+      peopleEl.appendChild(b);
+
+    }
+  );
+
+}
+
+
+/* =========================
+   RITA KALENDER
+   ========================= */
+
+function render(){
+
+  renderPeople();
+
+  const base =
+    monday();
+
+  const end =
+    new Date(base);
+
+  end.setDate(
+    end.getDate()+6
+  );
+
+  rangeEl.textContent =
+    fmt(base)
+    + " – "
+    + fmt(end);
+
+
+  daysEl.innerHTML = "";
+
+  cellsEl.innerHTML = "";
+
+
+  for(
+    let i=0;
+    i<7;
+    i++
+  ){
+
+    const d =
+      new Date(base);
+
+    d.setDate(
+      d.getDate()+i
+    );
+
+
+    const weekend =
+      i > 4;
+
+
+    /* DAGRUBRIK */
+
+    const h =
+      document.createElement(
+        "div"
+      );
+
+    h.className =
+      "day"
+      + (
+          weekend
+          ? " weekend"
+          : ""
+        );
+
+    h.innerHTML =
+
+      dayNames[i]
+      + "<b>"
+      + d.getDate()
+      + "</b>";
+
+    daysEl.appendChild(h);
+
+
+    /* DAGCELL */
+
+    const c =
+      document.createElement(
+        "button"
+      );
+
+    c.className =
+      "cell"
+      + (
+          weekend
+          ? " weekend"
+          : ""
+        )
+      + (
+          selected===i
+          && !weekend
+          ? " selected"
+          : ""
+        );
+
+
+    if(weekend){
+
+      c.disabled = true;
+
+      c.innerHTML =
+        '<span style="color:#aaa">—</span>';
+
+    }
+
+    else{
+
+      const s =
+        getStatus(
+          people[who][0],
+          d
+        );
+
+      let icon;
+
+      if(s==="ok")
+        icon="✓";
+
+      else if(s==="part")
+        icon="−";
+
+      else
+        icon="×";
+
+
+      c.innerHTML =
+        '<span class="mark '
+        + s
+        + '">'
+        + icon
+        + '</span>';
+
+
+      c.onclick =
+        async ()=>{
+
+          selected = i;
+
+          const current =
+            getStatus(
+              people[who][0],
+              d
+            );
+
+          let next;
+
+          if(current==="ok")
+            next="part";
+
+          else if(current==="part")
+            next="no";
+
+          else
+            next="ok";
+
+
+          const person =
+            people[who][0];
+
+          const ref =
+            doc(
+              db,
+              "calendar",
+              docId(
+                person,
+                d
+              )
+            );
+
+
+          try{
+
+            const existing =
+              getRecord(
+                person,
+                d
+              );
+
+
+            if(
+              next==="ok"
+              &&
+              !(existing?.note||"").trim()
+            ){
+
+              await deleteDoc(ref);
+
+            }
+
+            else{
+
+              await setDoc(
+                ref,
+                {
+                  person:person,
+                  date:dateKey(d),
+                  status:next,
+                  note:
+                    existing?.note || "",
+                  updatedAt:
+                    Date.now()
+                }
+              );
+
+            }
+
+            showMsg(
+              "✓ Status sparad"
+            );
+
+          }
+
+          catch(error){
+
+            console.error(error);
+
+            showMsg(
+              "Kunde inte spara. Kontrollera Firestore-reglerna."
+            );
+
+          }
+
+          render();
+
+        };
+
+    }
+
+
+    cellsEl.appendChild(c);
+
+  }
+
+
+  loadNote();
+
+}
+
+
+/* =========================
+   NOTERING
+   ========================= */
+
+function loadNote(){
+
+  const base =
+    monday();
+
+  const d =
+    new Date(base);
+
+  d.setDate(
+    d.getDate()+selected
+  );
+
+
+  const person =
+    people[who][0];
+
+
+  const record =
+    getRecord(
+      person,
+      d
+    );
+
+
+  noteEl.value =
+    record?.note || "";
+
+
+  titleEl.textContent =
+
+    person
+    + " · "
+    + dayNames[selected]
+    + " "
+    + fmt(d);
+
+
+  const s =
+    record?.status || "ok";
+
+
+  if(s==="ok"){
+
+    statusEl.textContent =
+      "Tillgänglig";
+
+    statusEl.style.background =
+      "#e8f7ef";
+
+    statusEl.style.color =
+      "#16764b";
+
+  }
+
+  else if(s==="part"){
+
+    statusEl.textContent =
+      "Delvis";
+
+    statusEl.style.background =
+      "#fff3d5";
+
+    statusEl.style.color =
+      "#866000";
+
+  }
+
+  else{
+
+    statusEl.textContent =
+      "Ej tillgänglig";
+
+    statusEl.style.background =
+      "#fde9e7";
+
+    statusEl.style.color =
+      "#a9312b";
+
+  }
+
+}
+
+
+/* =========================
+   MEDDELANDE
+   ========================= */
+
+function showMsg(text){
+
+  msgEl.textContent =
+    text;
+
+  setTimeout(
+    ()=>{
+      msgEl.textContent="";
+    },
+    2200
+  );
+
+}
+
+
+/* =========================
+   FIRESTORE LIVE
+   ========================= */
+
+function subscribe(){
+
+  if(unsubscribe)
+    unsubscribe();
+
+
+  records =
+    new Map();
+
+
+  const person =
+    people[who][0];
+
+
+  const q =
+    query(
+
+      collection(
+        db,
+        "calendar"
+      ),
+
+      where(
+        "person",
+        "==",
+        person
+      )
+
+    );
+
+
+  unsubscribe =
+    onSnapshot(
+
+      q,
+
+      snapshot=>{
+
+        records =
+          new Map();
+
+        snapshot.forEach(
+          docSnap=>{
+
+            records.set(
+              docSnap.id,
+              docSnap.data()
+            );
+
+          }
+        );
+
+
+        document
+          .getElementById(
+            "connectionDot"
+          )
+          .classList.add(
+            "live"
+          );
+
+
+        document
+          .getElementById(
+            "connectionText"
+          )
+          .textContent =
+            "Live – ändringar synkas automatiskt";
+
+
+        render();
+
+      },
+
+
+      error=>{
+
+        console.error(error);
+
+
+        document
+          .getElementById(
+            "connectionDot"
+          )
+          .classList.remove(
+            "live"
+          );
+
+
+        document
+          .getElementById(
+            "connectionText"
+          )
+          .textContent =
+            "Kunde inte ansluta till databasen";
+
+      }
+
+    );
+
+}
+
+
+/* =========================
+   VECKONAVIGATION
+   ========================= */
+
+document
+  .getElementById("prev")
+  .onclick = ()=>{
+
+    weekOffset--;
+
+    selected=0;
+
+    render();
+
+  };
+
+
+document
+  .getElementById("next")
+  .onclick = ()=>{
+
+    weekOffset++;
+
+    selected=0;
+
+    render();
+
+  };
+
+
+document
+  .getElementById("today")
+  .onclick = ()=>{
+
+    weekOffset=0;
+
+    selected =
+      Math.min(
+        4,
+        Math.max(
+          0,
+          (new Date().getDay()+6)%7
+        )
+      );
+
+    render();
+
+  };
+
+
+/* =========================
+   HELA ARBETSVECKAN
+   ========================= */
+
+document
+  .getElementById("week")
+  .onclick =
+  async ()=>{
+
+    const base =
+      monday();
+
+    const batch =
+      writeBatch(db);
+
+    const person =
+      people[who][0];
+
+
+    for(
+      let i=0;
+      i<5;
+      i++
+    ){
+
+      const d =
+        new Date(base);
+
+      d.setDate(
+        d.getDate()+i
+      );
+
+
+      const record =
+        getRecord(
+          person,
+          d
+        );
+
+
+      const ref =
+        doc(
+          db,
+          "calendar",
+          docId(
+            person,
+            d
+          )
+        );
+
+
+      if(record?.note){
+
+        batch.set(
+          ref,
+          {
+            ...record,
+            status:"ok",
+            updatedAt:Date.now()
+          }
+        );
+
+      }
+
+      else{
+
+        batch.delete(ref);
+
+      }
+
+    }
+
+
+    try{
+
+      await batch.commit();
+
+      showMsg(
+        "✓ Hela arbetsveckan är markerad som tillgänglig"
+      );
+
+      render();
+
+    }
+
+    catch(error){
+
+      console.error(error);
+
+      showMsg(
+        "Kunde inte spara veckan."
+      );
+
+    }
+
+  };
+
+
+/* =========================
+   SPARA NOTERING
+   ========================= */
+
+document
+  .getElementById("save")
+  .onclick =
+  async ()=>{
+
+    const base =
+      monday();
+
+    const d =
+      new Date(base);
+
+    d.setDate(
+      d.getDate()+selected
+    );
+
+
+    const person =
+      people[who][0];
+
+    const text =
+      noteEl.value.trim();
+
+
+    const record =
+      getRecord(
+        person,
+        d
+      );
+
+
+    const ref =
+      doc(
+        db,
+        "calendar",
+        docId(
+          person,
+          d
+        )
+      );
+
+
+    try{
+
+      if(
+        !text
+        &&
+        (
+          !record
+          ||
+          record.status==="ok"
+        )
+      ){
+
+        await deleteDoc(ref);
+
+      }
+
+      else{
+
+        await setDoc(
+          ref,
+          {
+            person:person,
+            date:dateKey(d),
+            status:
+              record?.status || "ok",
+            note:text,
+            updatedAt:
+              Date.now()
+          }
+        );
+
+      }
+
+
+      showMsg(
+        "✓ Noteringen är sparad för gruppen"
+      );
+
+    }
+
+    catch(error){
+
+      console.error(error);
+
+      showMsg(
+        "Kunde inte spara noteringen. Kontrollera Firestore-reglerna."
+      );
+
+    }
+
+  };
+
+
+/* =========================
+   START
+   ========================= */
+
+subscribe();
+
+render();
+
+</script>
+
+</body>
+</html>
