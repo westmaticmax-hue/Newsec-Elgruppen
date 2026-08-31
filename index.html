@@ -433,11 +433,9 @@ textarea:focus{
     <p>Gemensam tillgänglighetskalender</p>
   </div>
 
-
   <div class="people" id="people"></div>
 
-
-  <!-- NY KNAPP -->
+  <!-- IDAG-KNAPP -->
   <div style="padding:0 12px 12px;">
     <button
       id="todayOverviewButton"
@@ -456,8 +454,7 @@ textarea:focus{
     </button>
   </div>
 
-
-  <!-- NY ÖVERSIKT -->
+  <!-- IDAG-ÖVERSIKT -->
   <div
     class="todayOverview"
     id="todayOverview">
@@ -477,15 +474,19 @@ textarea:focus{
     <div id="todayOverviewPeople"></div>
 
     <div style="padding:10px 14px;background:#fff;">
+
       <button
         class="todayClose"
         id="todayClose">
         Stäng
       </button>
+
     </div>
 
   </div>
 
+
+  <!-- KALENDER -->
 
   <div class="calendar">
 
@@ -538,11 +539,8 @@ textarea:focus{
   <div class="legend">
 
     <span>🟢 Tillgänglig</span>
-
     <span>🟡 Delvis</span>
-
     <span>🔴 Ej tillgänglig</span>
-
     <span>⬜ Helg</span>
 
   </div>
@@ -626,6 +624,7 @@ import {
 import {
   getFirestore,
   doc,
+  getDoc,
   setDoc,
   deleteDoc,
   onSnapshot,
@@ -755,7 +754,9 @@ function monday(){
   const d =
     new Date();
 
-  d.setHours(12,0,0,0);
+  d.setHours(
+    12,0,0,0
+  );
 
   const day =
     (d.getDay()+6)%7;
@@ -790,7 +791,10 @@ function dateKey(d){
 }
 
 
-function docId(personName,d){
+function docId(
+  personName,
+  d
+){
 
   return (
 
@@ -813,11 +817,13 @@ function fmt(d){
     d.getDate()
     + " "
     + d
-        .toLocaleDateString(
-          "sv-SE",
-          {month:"short"}
-        )
-        .replace(".","")
+      .toLocaleDateString(
+        "sv-SE",
+        {
+          month:"short"
+        }
+      )
+      .replace(".","")
 
   );
 
@@ -835,7 +841,10 @@ function getRecord(
 
   return (
     records.get(
-      docId(personName,d)
+      docId(
+        personName,
+        d
+      )
     )
     || null
   );
@@ -854,13 +863,16 @@ function getStatus(
       d
     );
 
-  return record?.status || "ok";
+  return (
+    record?.status
+    || "ok"
+  );
 
 }
 
 
 /* =========================
-   RENDER PERSONER
+   PERSONER
    ========================= */
 
 function renderPeople(){
@@ -878,10 +890,10 @@ function renderPeople(){
       b.className =
         "person"
         + (
-            i===who
-            ? " active"
-            : ""
-          );
+          i===who
+          ? " active"
+          : ""
+        );
 
       b.innerHTML =
 
@@ -896,6 +908,7 @@ function renderPeople(){
 
         p[0];
 
+
       b.onclick = ()=>{
 
         who = i;
@@ -908,6 +921,7 @@ function renderPeople(){
 
       };
 
+
       peopleEl.appendChild(b);
 
     }
@@ -917,7 +931,7 @@ function renderPeople(){
 
 
 /* =========================
-   RENDER KALENDER
+   KALENDER
    ========================= */
 
 function render(){
@@ -961,7 +975,7 @@ function render(){
 
 
     const weekend =
-      i > 4;
+      i>4;
 
 
     const h =
@@ -972,17 +986,18 @@ function render(){
     h.className =
       "day"
       + (
-          weekend
-          ? " weekend"
-          : ""
-        );
+        weekend
+        ? " weekend"
+        : ""
+      );
+
 
     h.innerHTML =
-
       dayNames[i]
       + "<b>"
       + d.getDate()
       + "</b>";
+
 
     daysEl.appendChild(h);
 
@@ -992,19 +1007,20 @@ function render(){
         "button"
       );
 
+
     c.className =
       "cell"
       + (
-          weekend
-          ? " weekend"
-          : ""
-        )
+        weekend
+        ? " weekend"
+        : ""
+      )
       + (
-          selected===i
-          && !weekend
-          ? " selected"
-          : ""
-        );
+        selected===i
+        && !weekend
+        ? " selected"
+        : ""
+      );
 
 
     if(weekend){
@@ -1059,6 +1075,7 @@ function render(){
 
 
           let next;
+
 
           if(current==="ok")
             next="part";
@@ -1121,6 +1138,7 @@ function render(){
 
             }
 
+
             showMsg(
               "✓ Status sparad"
             );
@@ -1136,6 +1154,7 @@ function render(){
             );
 
           }
+
 
           render();
 
@@ -1187,7 +1206,6 @@ function loadNote(){
 
 
   titleEl.textContent =
-
     person
     + " · "
     + dayNames[selected]
@@ -1196,56 +1214,41 @@ function loadNote(){
 
 
   const s =
-    record?.status || "ok";
+    record?.status
+    || "ok";
 
 
-  if(s==="ok"){
+  statusEl.textContent =
+    s==="ok"
+    ? "Tillgänglig"
+    : s==="part"
+    ? "Delvis"
+    : "Ej tillgänglig";
 
-    statusEl.textContent =
-      "Tillgänglig";
 
-    statusEl.style.background =
-      "#e8f7ef";
+  statusEl.style.background =
+    s==="ok"
+    ? "#e8f7ef"
+    : s==="part"
+    ? "#fff3d5"
+    : "#fde9e7";
 
-    statusEl.style.color =
-      "#16764b";
 
-  }
-
-  else if(s==="part"){
-
-    statusEl.textContent =
-      "Delvis";
-
-    statusEl.style.background =
-      "#fff3d5";
-
-    statusEl.style.color =
-      "#866000";
-
-  }
-
-  else{
-
-    statusEl.textContent =
-      "Ej tillgänglig";
-
-    statusEl.style.background =
-      "#fde9e7";
-
-    statusEl.style.color =
-      "#a9312b";
-
-  }
+  statusEl.style.color =
+    s==="ok"
+    ? "#16764b"
+    : s==="part"
+    ? "#866000"
+    : "#a9312b";
 
 }
 
 
 /* =========================
-   IDAG-ÖVERSIKT
+   IDAG – ALLA PERSONER
    ========================= */
 
-function renderTodayOverview(){
+async function renderTodayOverview(){
 
   const today =
     new Date();
@@ -1285,20 +1288,105 @@ function renderTodayOverview(){
   container.innerHTML = "";
 
 
-  people.forEach(
-    person=>{
+  /*
+   * VIKTIGT:
+   * Här hämtas dagens dokument separat
+   * för ALLA fem personer.
+   *
+   * Vi använder alltså INTE records för
+   * den person som är vald i kalendern.
+   */
+
+  const results =
+    await Promise.all(
+
+      people.map(
+        async person=>{
+
+          const name =
+            person[0];
+
+
+          try{
+
+            const snapshot =
+              await getDoc(
+                doc(
+                  db,
+                  "calendar",
+                  docId(
+                    name,
+                    today
+                  )
+                )
+              );
+
+
+            if(
+              snapshot.exists()
+            ){
+
+              const data =
+                snapshot.data();
+
+
+              return {
+
+                name:name,
+
+                status:
+                  data.status
+                  || "ok"
+
+              };
+
+            }
+
+          }
+
+          catch(error){
+
+            console.error(
+              "Kunde inte läsa dagens status för "
+              + name,
+              error
+            );
+
+          }
+
+
+          /*
+           * Finns inget dokument betyder
+           * automatiskt tillgänglig.
+           */
+
+          return {
+
+            name:name,
+
+            status:"ok"
+
+          };
+
+        }
+
+      )
+
+    );
+
+
+  results.forEach(
+    result=>{
 
       const name =
-        person[0];
+        result.name;
 
       const s =
-        getStatus(
-          name,
-          today
-        );
+        result.status;
 
 
       let text;
+
 
       if(s==="ok")
         text="Tillgänglig";
@@ -1315,6 +1403,7 @@ function renderTodayOverview(){
           "div"
         );
 
+
       row.className =
         "todayPerson";
 
@@ -1328,6 +1417,7 @@ function renderTodayOverview(){
         +
 
         '<span class="todayPersonStatus">'
+
         +
 
         '<span class="todayStatusDot '
@@ -1348,6 +1438,7 @@ function renderTodayOverview(){
       );
 
     }
+
   );
 
 }
@@ -1427,6 +1518,7 @@ function subscribe(){
             );
 
           }
+
         );
 
 
@@ -1449,11 +1541,6 @@ function subscribe(){
 
         render();
 
-
-        /*
-         * Om Idag-översikten är öppen
-         * uppdateras den automatiskt.
-         */
 
         if(
           document
@@ -1501,12 +1588,13 @@ function subscribe(){
 
 
 /* =========================
-   VECKONAVIGATION
+   VECKA
    ========================= */
 
 document
   .getElementById("prev")
-  .onclick = ()=>{
+  .onclick =
+  ()=>{
 
     weekOffset--;
 
@@ -1519,7 +1607,8 @@ document
 
 document
   .getElementById("next")
-  .onclick = ()=>{
+  .onclick =
+  ()=>{
 
     weekOffset++;
 
@@ -1532,7 +1621,8 @@ document
 
 document
   .getElementById("today")
-  .onclick = ()=>{
+  .onclick =
+  ()=>{
 
     weekOffset=0;
 
@@ -1551,16 +1641,18 @@ document
 
 
 /* =========================
-   IDAG-KNAPPEN
+   IDAG-KNAPP
    ========================= */
 
 document
   .getElementById(
     "todayOverviewButton"
   )
-  .onclick = ()=>{
+  .onclick =
+  async ()=>{
 
-    renderTodayOverview();
+    await renderTodayOverview();
+
 
     document
       .getElementById(
@@ -1577,7 +1669,8 @@ document
   .getElementById(
     "todayClose"
   )
-  .onclick = ()=>{
+  .onclick =
+  ()=>{
 
     document
       .getElementById(
@@ -1776,11 +1869,6 @@ document
         "✓ Noteringen är sparad för gruppen"
       );
 
-
-      /*
-       * Om Idag-översikten är öppen
-       * uppdateras den.
-       */
 
       if(
         document
