@@ -400,7 +400,27 @@ textarea:focus{
   margin:12px 0 3px;
 }
 
+/* Diskret signatur längst ner */
+.signature{
+  text-align:center;
+  padding:18px 10px 14px;
+  font-size:10px;
+  color:#a0a8b0;
+  letter-spacing:.15px;
+}
+
+.signature .name{
+  font-style:italic;
+}
+
+.signature .credit{
+  margin-top:3px;
+  font-size:9px;
+  opacity:.8;
+}
+
 @media(max-width:400px){
+
   .person{
     min-width:85px;
     font-size:12px;
@@ -409,6 +429,7 @@ textarea:focus{
   .day{
     min-height:60px;
   }
+
 }
 </style>
 </head>
@@ -438,7 +459,9 @@ textarea:focus{
 
       <div>
         <div class="weekTitle" id="weekTitle"></div>
-        <button class="smallToday" id="todayBtn">Idag</button>
+        <button class="smallToday" id="todayBtn">
+          Idag
+        </button>
       </div>
 
       <button class="navBtn" id="nextWeek">›</button>
@@ -446,6 +469,7 @@ textarea:focus{
     </div>
 
     <div class="weekdays">
+
       <div class="weekday">Mån</div>
       <div class="weekday">Tis</div>
       <div class="weekday">Ons</div>
@@ -453,6 +477,7 @@ textarea:focus{
       <div class="weekday">Fre</div>
       <div class="weekday">Lör</div>
       <div class="weekday">Sön</div>
+
     </div>
 
     <div class="days" id="days"></div>
@@ -478,28 +503,54 @@ textarea:focus{
 
   </div>
 
+
   <div class="noteBox">
 
     <h3>Anteckningar för veckan</h3>
 
-    <div class="weekNotes" id="weekNotes"></div>
+    <div
+      class="weekNotes"
+      id="weekNotes">
+    </div>
 
     <textarea
       id="note"
       placeholder="Skriv en anteckning för vald dag..."
     ></textarea>
 
-    <button class="saveBtn" id="saveNote">
+    <button
+      class="saveBtn"
+      id="saveNote">
       💾 Spara
     </button>
 
   </div>
 
-  <div class="connection" id="connection">
+
+  <div
+    class="connection"
+    id="connection">
     Ansluter till kalendern...
   </div>
 
 </div>
+
+
+<!-- =====================================================
+     DISKRET SIGNATUR
+     ===================================================== -->
+
+<footer class="signature">
+
+  <div class="name">
+    Max v Leeuwen · 2026
+  </div>
+
+  <div class="credit">
+    Skapad tillsammans med ChatGPT
+  </div>
+
+</footer>
 
 
 <script type="module">
@@ -530,8 +581,11 @@ const firebaseConfig = {
   appId: "1:460978187079:web:404760825c79fd218b7a62"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app =
+  initializeApp(firebaseConfig);
+
+const db =
+  getFirestore(app);
 
 
 /* =========================================================
@@ -546,53 +600,56 @@ const people = [
   "Max"
 ];
 
-let currentPerson = people[0];
+let currentPerson =
+  people[0];
 
-let currentWeek = monday(new Date());
+let currentWeek =
+  monday(new Date());
 
-let selected = getTodayIndex();
+let selected =
+  getTodayIndex();
 
-let allCalendarRecords = new Map();
+let allCalendarRecords =
+  new Map();
 
-let unsubscribeAll = null;
+let unsubscribeAll =
+  null;
 
 
 /* =========================================================
-   DATUMFUNKTIONER
+   DATUM
    ========================================================= */
 
 function monday(d){
 
-  const x = new Date(d);
+  const x =
+    new Date(d);
 
-  const day = x.getDay();
+  const day =
+    x.getDay();
 
   const diff =
-    day === 0 ? -6 : 1 - day;
+    day === 0
+      ? -6
+      : 1 - day;
 
-  x.setDate(x.getDate() + diff);
+  x.setDate(
+    x.getDate()+diff
+  );
 
-  x.setHours(0,0,0,0);
+  x.setHours(
+    0,0,0,0
+  );
 
   return x;
+
 }
 
 
-/*
-  Returnerar dagens arbetsdag:
-
-  Måndag = 0
-  Tisdag = 1
-  Onsdag = 2
-  Torsdag = 3
-  Fredag = 4
-
-  På lördag/söndag används fredag.
-*/
-
 function getTodayIndex(){
 
-  const day = new Date().getDay();
+  const day =
+    new Date().getDay();
 
   if(day === 0 || day === 6){
 
@@ -607,20 +664,29 @@ function getTodayIndex(){
 
 function goToToday(){
 
-  const now = new Date();
+  const now =
+    new Date();
 
-  currentWeek = monday(now);
+  currentWeek =
+    monday(now);
 
-  selected = getTodayIndex();
+  selected =
+    getTodayIndex();
 
 }
 
 
 function dateKey(d){
 
-  return d.getFullYear() + "-" +
-    String(d.getMonth()+1).padStart(2,"0") + "-" +
-    String(d.getDate()).padStart(2,"0");
+  return d.getFullYear() +
+    "-" +
+    String(
+      d.getMonth()+1
+    ).padStart(2,"0") +
+    "-" +
+    String(
+      d.getDate()
+    ).padStart(2,"0");
 
 }
 
@@ -628,7 +694,9 @@ function dateKey(d){
 function docId(personName,d){
 
   return (
-    personName + "_" + dateKey(d)
+    personName +
+    "_" +
+    dateKey(d)
   ).replace(
     /[^A-Za-z0-9ÅÄÖåäöÉé_-]/g,
     "_"
@@ -667,11 +735,10 @@ function getRecord(personName,d){
 function getStatus(personName,d){
 
   const record =
-    getRecord(personName,d);
-
-  /*
-    Ingen sparad post = tillgänglig.
-  */
+    getRecord(
+      personName,
+      d
+    );
 
   return record?.status || "ok";
 
@@ -692,19 +759,22 @@ function statusText(status){
 
 
 /* =========================================================
-   PERSONER HÖGST UPP
+   NAMN HÖGST UPP
    ========================================================= */
 
 function renderPeople(){
 
   const container =
-    document.getElementById("people");
+    document.getElementById(
+      "people"
+    );
 
   container.innerHTML = "";
 
 
   /*
-    ALLA namn får status för samma valda dag.
+    ALLA personer visar status
+    för samma valda dag.
   */
 
   const d =
@@ -714,7 +784,9 @@ function renderPeople(){
   people.forEach(person => {
 
     const button =
-      document.createElement("button");
+      document.createElement(
+        "button"
+      );
 
 
     button.className =
@@ -727,52 +799,55 @@ function renderPeople(){
 
 
     const status =
-      getStatus(person,d);
+      getStatus(
+        person,
+        d
+      );
 
 
     const dot =
-      document.createElement("span");
+      document.createElement(
+        "span"
+      );
 
 
     dot.className =
-      "personStatusDot " + status;
+      "personStatusDot " +
+      status;
 
 
     button.appendChild(dot);
 
 
     button.appendChild(
-      document.createTextNode(person)
+      document.createTextNode(
+        person
+      )
     );
 
 
     /*
-      VIKTIG ÄNDRING:
-
-      När man väljer ett namn går kalendern
-      ALLTID tillbaka till dagens datum.
-
-      Alla färgmarkeringar visar därefter
-      status för idag.
+      När man väljer ett namn
+      går kalendern alltid till idag.
     */
 
     button.addEventListener(
       "click",
       () => {
 
-        currentPerson = person;
+        currentPerson =
+          person;
 
         goToToday();
 
-        /*
-          Om "Idag – visa allas status"
-          var öppet stänger vi det eftersom
-          vi nu har bytt vy.
-        */
 
         document
-          .getElementById("todayOverview")
-          .classList.remove("show");
+          .getElementById(
+            "todayOverview"
+          )
+          .classList.remove(
+            "show"
+          );
 
 
         render();
@@ -781,7 +856,9 @@ function renderPeople(){
     );
 
 
-    container.appendChild(button);
+    container.appendChild(
+      button
+    );
 
   });
 
@@ -789,13 +866,15 @@ function renderPeople(){
 
 
 /* =========================================================
-   VECKAN
+   VECKOKALENDER
    ========================================================= */
 
 function renderWeek(){
 
   const title =
-    document.getElementById("weekTitle");
+    document.getElementById(
+      "weekTitle"
+    );
 
 
   const friday =
@@ -807,34 +886,44 @@ function renderWeek(){
 
 
   const months = [
-    "jan","feb","mar","apr","maj","jun",
-    "jul","aug","sep","okt","nov","dec"
+    "jan","feb","mar","apr",
+    "maj","jun","jul","aug",
+    "sep","okt","nov","dec"
   ];
 
 
   title.textContent =
     currentWeek.getDate() +
     " " +
-    months[currentWeek.getMonth()] +
+    months[
+      currentWeek.getMonth()
+    ] +
     " – " +
     friday.getDate() +
     " " +
-    months[friday.getMonth()] +
+    months[
+      friday.getMonth()
+    ] +
     " " +
     friday.getFullYear();
 
 
   const daysContainer =
-    document.getElementById("days");
+    document.getElementById(
+      "days"
+    );
 
 
-  daysContainer.innerHTML = "";
+  daysContainer.innerHTML =
+    "";
 
 
   for(let i=0;i<7;i++){
 
     const d =
-      new Date(currentWeek);
+      new Date(
+        currentWeek
+      );
 
 
     d.setDate(
@@ -843,28 +932,37 @@ function renderWeek(){
 
 
     const day =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
 
-    day.className = "day";
+    day.className =
+      "day";
 
 
     if(i >= 5){
 
-      day.classList.add("weekend");
+      day.classList.add(
+        "weekend"
+      );
 
     }
 
 
     if(i === selected){
 
-      day.classList.add("selected");
+      day.classList.add(
+        "selected"
+      );
 
     }
 
 
     const num =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
 
     num.className =
@@ -879,7 +977,9 @@ function renderWeek(){
 
 
     const circle =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
 
     circle.className =
@@ -888,40 +988,53 @@ function renderWeek(){
 
     if(i >= 5){
 
-      circle.classList.add("ok");
+      circle.classList.add(
+        "ok"
+      );
 
-      circle.textContent = "–";
+      circle.textContent =
+        "–";
 
     }
     else{
 
       const status =
-        getStatus(currentPerson,d);
+        getStatus(
+          currentPerson,
+          d
+        );
 
 
-      circle.classList.add(status);
+      circle.classList.add(
+        status
+      );
 
 
       if(status === "no"){
 
-        circle.textContent = "✕";
+        circle.textContent =
+          "✕";
 
       }
       else if(status === "part"){
 
-        circle.textContent = "•";
+        circle.textContent =
+          "•";
 
       }
       else{
 
-        circle.textContent = "✓";
+        circle.textContent =
+          "✓";
 
       }
 
     }
 
 
-    day.appendChild(circle);
+    day.appendChild(
+      circle
+    );
 
 
     if(i < 5){
@@ -931,7 +1044,7 @@ function renderWeek(){
         async () => {
 
           /*
-            Klick på annan dag:
+            Klick på en annan dag:
             välj dagen.
 
             Klick på redan vald dag:
@@ -957,7 +1070,9 @@ function renderWeek(){
     }
 
 
-    daysContainer.appendChild(day);
+    daysContainer.appendChild(
+      day
+    );
 
   }
 
@@ -975,11 +1090,17 @@ async function changeStatus(){
 
 
   const id =
-    docId(currentPerson,d);
+    docId(
+      currentPerson,
+      d
+    );
 
 
   const current =
-    getStatus(currentPerson,d);
+    getStatus(
+      currentPerson,
+      d
+    );
 
 
   let next;
@@ -1003,17 +1124,33 @@ async function changeStatus(){
 
 
   const existing =
-    getRecord(currentPerson,d);
+    getRecord(
+      currentPerson,
+      d
+    );
 
 
   await setDoc(
-    doc(db,"calendar",id),
+    doc(
+      db,
+      "calendar",
+      id
+    ),
     {
-      person:currentPerson,
-      date:dateKey(d),
-      status:next,
-      note:existing?.note || "",
-      updatedAt:Date.now()
+      person:
+        currentPerson,
+
+      date:
+        dateKey(d),
+
+      status:
+        next,
+
+      note:
+        existing?.note || "",
+
+      updatedAt:
+        Date.now()
     }
   );
 
@@ -1027,10 +1164,13 @@ async function changeStatus(){
 function renderWeekNotes(){
 
   const container =
-    document.getElementById("weekNotes");
+    document.getElementById(
+      "weekNotes"
+    );
 
 
-  container.innerHTML = "";
+  container.innerHTML =
+    "";
 
 
   const dayNames = [
@@ -1042,13 +1182,16 @@ function renderWeekNotes(){
   ];
 
 
-  let found = false;
+  let found =
+    false;
 
 
   for(let i=0;i<5;i++){
 
     const d =
-      new Date(currentWeek);
+      new Date(
+        currentWeek
+      );
 
 
     d.setDate(
@@ -1057,7 +1200,10 @@ function renderWeekNotes(){
 
 
     const record =
-      getRecord(currentPerson,d);
+      getRecord(
+        currentPerson,
+        d
+      );
 
 
     if(
@@ -1069,7 +1215,9 @@ function renderWeekNotes(){
 
 
       const note =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
 
       note.className =
@@ -1077,7 +1225,9 @@ function renderWeekNotes(){
 
 
       const date =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
 
 
       date.className =
@@ -1093,19 +1243,28 @@ function renderWeekNotes(){
 
 
       const text =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
 
       text.textContent =
         record.note;
 
 
-      note.appendChild(date);
+      note.appendChild(
+        date
+      );
 
-      note.appendChild(text);
+
+      note.appendChild(
+        text
+      );
 
 
-      container.appendChild(note);
+      container.appendChild(
+        note
+      );
 
     }
 
@@ -1115,7 +1274,9 @@ function renderWeekNotes(){
   if(!found){
 
     const empty =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
 
     empty.className =
@@ -1128,7 +1289,9 @@ function renderWeekNotes(){
       " den här veckan.";
 
 
-    container.appendChild(empty);
+    container.appendChild(
+      empty
+    );
 
   }
 
@@ -1146,10 +1309,15 @@ function renderNote(){
 
 
   const record =
-    getRecord(currentPerson,d);
+    getRecord(
+      currentPerson,
+      d
+    );
 
 
-  document.getElementById("note").value =
+  document.getElementById(
+    "note"
+  ).value =
     record?.note || "";
 
 }
@@ -1176,7 +1344,9 @@ function render(){
    FÖREGÅENDE VECKA
    ========================================================= */
 
-document.getElementById("prevWeek")
+document.getElementById(
+  "prevWeek"
+)
 .addEventListener(
   "click",
   () => {
@@ -1197,7 +1367,9 @@ document.getElementById("prevWeek")
    NÄSTA VECKA
    ========================================================= */
 
-document.getElementById("nextWeek")
+document.getElementById(
+  "nextWeek"
+)
 .addEventListener(
   "click",
   () => {
@@ -1215,19 +1387,27 @@ document.getElementById("nextWeek")
 
 
 /* =========================================================
-   IDAG-KNAPPEN I KALENDERN
+   IDAG
    ========================================================= */
 
-document.getElementById("todayBtn")
+document.getElementById(
+  "todayBtn"
+)
 .addEventListener(
   "click",
   () => {
 
     goToToday();
 
+
     document
-      .getElementById("todayOverview")
-      .classList.remove("show");
+      .getElementById(
+        "todayOverview"
+      )
+      .classList.remove(
+        "show"
+      );
+
 
     render();
 
@@ -1239,16 +1419,17 @@ document.getElementById("todayBtn")
    IDAG – VISA ALLAS STATUS
    ========================================================= */
 
-document.getElementById("todayAllBtn")
+document.getElementById(
+  "todayAllBtn"
+)
 .addEventListener(
   "click",
   async () => {
 
     /*
-      Först ställer vi kalendern på idag.
-
-      Detta gör automatiskt att färgerna
-      högst upp också blir dagens färger.
+      Samma datum används av
+      kalendern, färgmarkeringarna
+      och översikten.
     */
 
     goToToday();
@@ -1263,10 +1444,14 @@ document.getElementById("todayAllBtn")
 
 
     if(
-      overview.classList.contains("show")
+      overview.classList.contains(
+        "show"
+      )
     ){
 
-      overview.classList.remove("show");
+      overview.classList.remove(
+        "show"
+      );
 
       return;
 
@@ -1275,7 +1460,10 @@ document.getElementById("todayAllBtn")
 
     await renderTodayOverview();
 
-    overview.classList.add("show");
+
+    overview.classList.add(
+      "show"
+    );
 
   }
 );
@@ -1284,11 +1472,8 @@ document.getElementById("todayAllBtn")
 async function renderTodayOverview(){
 
   /*
-    Samma selectedDate() används.
-
-    Det innebär att översikten och
-    färgmarkeringarna alltid avser
-    exakt samma dag.
+    Använd exakt samma
+    valda datum.
   */
 
   const today =
@@ -1301,16 +1486,22 @@ async function renderTodayOverview(){
     );
 
 
-  container.innerHTML = "";
+  container.innerHTML =
+    "";
 
 
-  for(const name of people){
+  for(
+    const name of people
+  ){
 
     const ref =
       doc(
         db,
         "calendar",
-        docId(name,today)
+        docId(
+          name,
+          today
+        )
       );
 
 
@@ -1329,7 +1520,9 @@ async function renderTodayOverview(){
 
 
     const row =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
 
     row.className =
@@ -1337,7 +1530,9 @@ async function renderTodayOverview(){
 
 
     const nameEl =
-      document.createElement("span");
+      document.createElement(
+        "span"
+      );
 
 
     nameEl.textContent =
@@ -1345,7 +1540,9 @@ async function renderTodayOverview(){
 
 
     const statusEl =
-      document.createElement("span");
+      document.createElement(
+        "span"
+      );
 
 
     statusEl.className =
@@ -1353,14 +1550,19 @@ async function renderTodayOverview(){
 
 
     const dot =
-      document.createElement("span");
+      document.createElement(
+        "span"
+      );
 
 
     dot.className =
-      "statusDot " + status;
+      "statusDot " +
+      status;
 
 
-    statusEl.appendChild(dot);
+    statusEl.appendChild(
+      dot
+    );
 
 
     statusEl.appendChild(
@@ -1370,12 +1572,19 @@ async function renderTodayOverview(){
     );
 
 
-    row.appendChild(nameEl);
+    row.appendChild(
+      nameEl
+    );
 
-    row.appendChild(statusEl);
+
+    row.appendChild(
+      statusEl
+    );
 
 
-    container.appendChild(row);
+    container.appendChild(
+      row
+    );
 
   }
 
@@ -1386,7 +1595,9 @@ async function renderTodayOverview(){
    SPARA ANTECKNING
    ========================================================= */
 
-document.getElementById("saveNote")
+document.getElementById(
+  "saveNote"
+)
 .addEventListener(
   "click",
   async () => {
@@ -1396,11 +1607,17 @@ document.getElementById("saveNote")
 
 
     const id =
-      docId(currentPerson,d);
+      docId(
+        currentPerson,
+        d
+      );
 
 
     const existing =
-      getRecord(currentPerson,d);
+      getRecord(
+        currentPerson,
+        d
+      );
 
 
     const note =
@@ -1410,13 +1627,26 @@ document.getElementById("saveNote")
 
 
     await setDoc(
-      doc(db,"calendar",id),
+      doc(
+        db,
+        "calendar",
+        id
+      ),
       {
-        person:currentPerson,
-        date:dateKey(d),
-        status:existing?.status || "ok",
-        note:note,
-        updatedAt:Date.now()
+        person:
+          currentPerson,
+
+        date:
+          dateKey(d),
+
+        status:
+          existing?.status || "ok",
+
+        note:
+          note,
+
+        updatedAt:
+          Date.now()
       }
     );
 
@@ -1439,7 +1669,10 @@ function subscribeToCalendar(){
 
   unsubscribeAll =
     onSnapshot(
-      collection(db,"calendar"),
+      collection(
+        db,
+        "calendar"
+      ),
 
       snapshot => {
 
@@ -1447,14 +1680,16 @@ function subscribeToCalendar(){
           new Map();
 
 
-        snapshot.forEach(item => {
+        snapshot.forEach(
+          item => {
 
-          allCalendarRecords.set(
-            item.id,
-            item.data()
-          );
+            allCalendarRecords.set(
+              item.id,
+              item.data()
+            );
 
-        });
+          }
+        );
 
 
         document.getElementById(
@@ -1464,12 +1699,12 @@ function subscribeToCalendar(){
 
 
         /*
-          Uppdaterar allt:
+          Uppdaterar:
 
-          - alla personers färger
-          - vald persons kalender
-          - veckans anteckningar
-          - vald dags anteckning
+          • alla fem färgmarkeringar
+          • kalendern
+          • veckans anteckningar
+          • vald dags anteckning
         */
 
         render();
