@@ -1,424 +1,401 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="sv">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#173b8f">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Newsec Elgruppen</title>
 
 <style>
 :root{
-  --ok:#22a86a;
-  --part:#e5a51f;
-  --no:#df5148;
-  --ink:#172033;
-  --muted:#687184;
-  --line:#d8dce5;
-  --accent:#173b8f;
+  --blue:#1769aa;
+  --blue-dark:#12558c;
+  --ok:#35b86b;
+  --part:#f2c94c;
+  --no:#e74c3c;
+  --grey:#d9dde2;
+  --light:#f5f7fa;
+  --text:#1d2733;
 }
 
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
 body{
   margin:0;
-  background:#f4f6fa;
-  color:var(--ink);
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:#eef2f6;
+  color:var(--text);
 }
 
-.app{
-  width:100%;
-  max-width:736px;
-  margin:0 auto;
-  background:#fff;
-  min-height:100vh;
+header{
+  background:var(--blue);
+  color:white;
+  padding:18px 16px 15px;
+  text-align:center;
 }
 
-.hero{
-  background:#173b8f;
-  color:#fff;
-  padding:20px;
-}
-
-.hero h1{
+header h1{
   margin:0;
-  font-size:25px;
-  line-height:1.15;
+  font-size:23px;
+  font-weight:700;
 }
 
-.hero p{
-  margin:5px 0 0;
-  font-size:14px;
+header p{
+  margin:4px 0 0;
+  font-size:13px;
   opacity:.9;
 }
 
+.container{
+  max-width:650px;
+  margin:0 auto;
+  padding:12px;
+}
+
+/* Personerna */
 .people{
   display:flex;
   gap:7px;
   overflow-x:auto;
-  padding:14px 12px 12px;
-  background:#fff;
+  padding-bottom:5px;
+  scrollbar-width:none;
+}
+
+.people::-webkit-scrollbar{
+  display:none;
 }
 
 .person{
-  border:1px solid var(--line);
-  background:#fff;
-  color:var(--ink);
-  border-radius:22px;
-  padding:9px 14px;
-  min-height:44px;
-  white-space:nowrap;
+  flex:1 0 auto;
+  min-width:92px;
+  border:0;
+  border-radius:10px;
+  padding:9px 7px;
+  background:white;
+  font-size:13px;
+  font-weight:600;
+  color:var(--text);
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
   cursor:pointer;
 }
 
 .person.active{
-  border:2px solid #315bd6;
-  font-weight:750;
+  background:var(--blue);
+  color:white;
 }
 
-.calendar{
-  margin:0 12px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  overflow:hidden;
-  background:#fff;
-}
-
-.weekbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:12px;
-  background:#f5f7fb;
-}
-
-.weekbar>button{
-  width:42px;
-  height:42px;
-  border:1px solid var(--line);
-  background:#fff;
-  border-radius:11px;
-  font-size:23px;
-  cursor:pointer;
-}
-
-.weekcenter{
-  text-align:center;
-}
-
-.weeklabel{
-  font-weight:750;
-  font-size:15px;
-}
-
-.today{
-  margin-top:5px;
-  border:0;
-  background:#e9edff;
-  color:#173b8f;
-  border-radius:999px;
-  padding:5px 12px;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(7,minmax(35px,1fr));
-}
-
-.day{
-  padding:8px 2px;
-  text-align:center;
-  font-size:11px;
-  color:var(--muted);
-  border-right:1px solid #eceef2;
-  border-bottom:1px solid #eceef2;
-}
-
-.day b{
-  display:block;
-  color:var(--ink);
-  font-size:14px;
-  margin-top:2px;
-}
-
-.day.weekend{
-  background:#f1f2f4;
-  color:#a2a7b1;
-}
-
-.day.weekend b{
-  color:#a2a7b1;
-}
-
-.cell{
-  height:62px;
-  border:0;
-  border-right:1px solid #eceef2;
-  border-bottom:1px solid #eceef2;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-}
-
-.cell.weekend{
-  background:#f1f2f4;
-  cursor:default;
-}
-
-.cell.selected{
-  background:#eef1ff;
-}
-
-.mark{
-  width:35px;
-  height:35px;
+.personStatusDot{
+  display:inline-block;
+  width:10px;
+  height:10px;
   border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  font-size:17px;
-  font-weight:850;
+  margin-right:5px;
+  vertical-align:middle;
+  background:var(--ok);
+  box-shadow:0 0 0 1px rgba(0,0,0,.08);
 }
 
-.ok{
+.personStatusDot.ok{
   background:var(--ok);
 }
 
-.part{
+.personStatusDot.part{
   background:var(--part);
 }
 
-.no{
+.personStatusDot.no{
   background:var(--no);
 }
 
-.legend{
+/* Idag-knappen */
+.todayAllBtn{
+  width:100%;
+  margin-top:9px;
+  border:0;
+  border-radius:10px;
+  background:white;
+  color:var(--blue);
+  font-size:14px;
+  font-weight:600;
+  padding:11px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  cursor:pointer;
+}
+
+.todayAllBtn:active{
+  transform:scale(.99);
+}
+
+.todayOverview{
+  display:none;
+  margin-top:8px;
+  background:white;
+  border-radius:10px;
+  padding:10px 12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+
+.todayOverview.show{
+  display:block;
+}
+
+.todayRow{
   display:flex;
-  gap:14px;
-  flex-wrap:wrap;
-  padding:11px 15px 3px;
-  font-size:12px;
-  color:var(--muted);
+  align-items:center;
+  justify-content:space-between;
+  padding:7px 0;
+  border-bottom:1px solid #edf0f3;
+  font-size:14px;
 }
 
-.note{
-  margin:12px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  background:#fff;
-  padding:15px;
+.todayRow:last-child{
+  border-bottom:0;
 }
 
-.notehead{
+.todayStatus{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-weight:600;
+}
+
+.statusDot{
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  display:inline-block;
+}
+
+.statusDot.ok{
+  background:var(--ok);
+}
+
+.statusDot.part{
+  background:var(--part);
+}
+
+.statusDot.no{
+  background:var(--no);
+}
+
+/* Kalender */
+.calendarBox{
+  background:white;
+  margin-top:12px;
+  border-radius:12px;
+  padding:12px;
+  box-shadow:0 1px 5px rgba(0,0,0,.08);
+}
+
+.weekNav{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:8px;
 }
 
-.note h3{
-  margin:0;
-  font-size:16px;
+.navBtn{
+  width:42px;
+  height:38px;
+  border:0;
+  border-radius:9px;
+  background:#edf2f7;
+  color:var(--blue);
+  font-size:21px;
+  font-weight:700;
+  cursor:pointer;
 }
 
-.status{
-  font-size:12px;
-  font-weight:750;
-  padding:5px 9px;
-  border-radius:999px;
+.weekTitle{
+  flex:1;
+  text-align:center;
+  font-size:14px;
+  font-weight:700;
 }
 
-.hint{
+.smallToday{
+  display:block;
+  margin:7px auto 0;
+  border:0;
+  background:none;
+  color:var(--blue);
   font-size:12px;
-  color:var(--muted);
-  margin:6px 0 10px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.weekdays{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+  margin-top:13px;
+}
+
+.weekday{
+  text-align:center;
+  font-size:11px;
+  font-weight:700;
+  color:#66717d;
+}
+
+.days{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px;
+  margin-top:5px;
+}
+
+.day{
+  min-height:64px;
+  border-radius:9px;
+  background:#f7f9fb;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  border:2px solid transparent;
+}
+
+.day.selected{
+  border-color:var(--blue);
+}
+
+.day.weekend{
+  background:#e1e4e8;
+  color:#a1a7ae;
+  cursor:default;
+}
+
+.dayNum{
+  font-size:12px;
+  margin-bottom:5px;
+}
+
+.circle{
+  width:29px;
+  height:29px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:14px;
+  font-weight:700;
+}
+
+.circle.ok{
+  background:var(--ok);
+}
+
+.circle.part{
+  background:var(--part);
+  color:#6d5700;
+}
+
+.circle.no{
+  background:var(--no);
+}
+
+/* Legend */
+.legend{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-top:12px;
+  font-size:11px;
+  color:#59636e;
+}
+
+.legendItem{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.legendDot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+}
+
+.legendDot.ok{
+  background:var(--ok);
+}
+
+.legendDot.part{
+  background:var(--part);
+}
+
+.legendDot.no{
+  background:var(--no);
+}
+
+/* Anteckning */
+.noteBox{
+  background:white;
+  margin-top:12px;
+  border-radius:12px;
+  padding:12px;
+  box-shadow:0 1px 5px rgba(0,0,0,.08);
+}
+
+.noteBox h3{
+  margin:0 0 8px;
+  font-size:14px;
 }
 
 textarea{
   width:100%;
-  min-height:78px;
-  border:1px solid #d3d7df;
-  border-radius:12px;
-  padding:11px 12px;
-  font-size:16px;
+  min-height:75px;
   resize:vertical;
+  border:1px solid #d5dbe1;
+  border-radius:8px;
+  padding:9px;
+  font-family:inherit;
+  font-size:14px;
   outline:none;
 }
 
 textarea:focus{
-  border-color:#315bd6;
-  box-shadow:0 0 0 3px #e9edff;
+  border-color:var(--blue);
 }
 
-.actions{
-  display:flex;
-  gap:8px;
-  margin-top:9px;
-}
-
-.actions button{
-  min-height:44px;
-  border-radius:11px;
-  padding:0 13px;
-  border:1px solid var(--line);
-  background:#fff;
+.saveBtn{
+  width:100%;
+  margin-top:8px;
+  border:0;
+  border-radius:9px;
+  padding:10px;
+  background:var(--blue);
+  color:white;
+  font-size:14px;
   font-weight:700;
   cursor:pointer;
 }
 
-.save{
-  flex:1 !important;
-  background:var(--accent) !important;
-  color:#fff !important;
-  border:0 !important;
-}
-
-.msg{
-  font-size:12px;
-  color:#16804e;
-  min-height:17px;
-  margin-top:7px;
+.saveBtn:active{
+  background:var(--blue-dark);
 }
 
 .connection{
-  padding:0 15px 16px;
-  font-size:11px;
-  color:var(--muted);
   text-align:center;
+  font-size:11px;
+  color:#68737e;
+  margin:12px 0 3px;
 }
 
-.dot{
-  display:inline-block;
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  margin-right:5px;
-  background:#aaa;
-}
-
-.dot.live{
-  background:var(--ok);
-}
-
-
-/* ============================
-   IDAG-ÖVERSIKT
-   ============================ */
-
-.todayOverview{
-  display:none;
-  margin:0 12px 12px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  background:#f7f9fc;
-  overflow:hidden;
-}
-
-.todayOverview.visible{
-  display:block;
-}
-
-.todayOverviewHeader{
-  padding:13px 14px;
-  background:#eef1f8;
-  border-bottom:1px solid var(--line);
-}
-
-.todayOverviewHeader strong{
-  display:block;
-  font-size:16px;
-}
-
-.todayOverviewHeader span{
-  display:block;
-  margin-top:2px;
-  font-size:12px;
-  color:var(--muted);
-}
-
-.todayPerson{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  min-height:48px;
-  padding:8px 14px;
-  background:#fff;
-  border-bottom:1px solid #eceef2;
-}
-
-.todayPerson:last-child{
-  border-bottom:0;
-}
-
-.todayPersonName{
-  font-size:15px;
-  font-weight:700;
-}
-
-.todayPersonStatus{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  font-size:13px;
-  font-weight:700;
-}
-
-.todayStatusDot{
-  width:13px;
-  height:13px;
-  border-radius:50%;
-}
-
-.todayStatusDot.ok{
-  background:var(--ok);
-}
-
-.todayStatusDot.part{
-  background:var(--part);
-}
-
-.todayStatusDot.no{
-  background:var(--no);
-}
-
-.todayClose{
-  margin-top:10px;
-  width:100%;
-  min-height:42px;
-  border:1px solid var(--line);
-  border-radius:11px;
-  background:#fff;
-  color:var(--ink);
-  font-weight:700;
-  cursor:pointer;
-}
-
-@media(max-width:420px){
-
-  .hero{
-    padding:17px;
+@media(max-width:400px){
+  .person{
+    min-width:85px;
+    font-size:12px;
   }
 
-  .hero h1{
-    font-size:22px;
-  }
-
-  .cell{
-    height:56px;
-  }
-
-  .mark{
-    width:31px;
-    height:31px;
-  }
-
-  .todayPerson{
-    min-height:46px;
+  .day{
+    min-height:60px;
   }
 }
 </style>
@@ -426,1487 +403,945 @@ textarea:focus{
 
 <body>
 
-<div class="app">
+<header>
+  <h1>Newsec Elgruppen</h1>
+  <p>Planera tillgänglighet tillsammans</p>
+</header>
 
-  <div class="hero">
-    <h1>Newsec Elgruppen</h1>
-    <p>Gemensam tillgänglighetskalender</p>
-  </div>
+<div class="container">
 
   <div class="people" id="people"></div>
 
-  <!-- IDAG-KNAPP -->
-  <div style="padding:0 12px 12px;">
-    <button
-      id="todayOverviewButton"
-      style="
-        width:100%;
-        min-height:44px;
-        border:1px solid #d8dce5;
-        border-radius:12px;
-        background:#f5f7fb;
-        color:#173b8f;
-        font-weight:750;
-        font-size:15px;
-        cursor:pointer;
-      ">
-      📅 Idag – visa allas status
-    </button>
-  </div>
+  <button class="todayAllBtn" id="todayAllBtn">
+    📅 Idag – visa allas status
+  </button>
 
-  <!-- IDAG-ÖVERSIKT -->
-  <div
-    class="todayOverview"
-    id="todayOverview">
+  <div class="todayOverview" id="todayOverview"></div>
 
-    <div class="todayOverviewHeader">
+  <div class="calendarBox">
 
-      <strong id="todayOverviewDate">
-        Idag
-      </strong>
+    <div class="weekNav">
+      <button class="navBtn" id="prevWeek">‹</button>
 
-      <span>
-        Tillgänglighet för hela Elgruppen
-      </span>
-
-    </div>
-
-    <div id="todayOverviewPeople"></div>
-
-    <div style="padding:10px 14px;background:#fff;">
-
-      <button
-        class="todayClose"
-        id="todayClose">
-        Stäng
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- KALENDER -->
-
-  <div class="calendar">
-
-    <div class="weekbar">
-
-      <button
-        id="prev"
-        aria-label="Föregående vecka">
-        ‹
-      </button>
-
-      <div class="weekcenter">
-
-        <div
-          class="weeklabel"
-          id="range">
-        </div>
-
-        <button
-          class="today"
-          id="today">
-          Idag
-        </button>
-
+      <div>
+        <div class="weekTitle" id="weekTitle"></div>
+        <button class="smallToday" id="todayBtn">Idag</button>
       </div>
 
-      <button
-        id="next"
-        aria-label="Nästa vecka">
-        ›
-      </button>
-
+      <button class="navBtn" id="nextWeek">›</button>
     </div>
 
-
-    <div
-      class="grid"
-      id="days">
+    <div class="weekdays">
+      <div class="weekday">Mån</div>
+      <div class="weekday">Tis</div>
+      <div class="weekday">Ons</div>
+      <div class="weekday">Tor</div>
+      <div class="weekday">Fre</div>
+      <div class="weekday">Lör</div>
+      <div class="weekday">Sön</div>
     </div>
 
+    <div class="days" id="days"></div>
 
-    <div
-      class="grid"
-      id="cells">
-    </div>
+    <div class="legend">
+      <div class="legendItem">
+        <span class="legendDot ok"></span>
+        Tillgänglig
+      </div>
 
-  </div>
+      <div class="legendItem">
+        <span class="legendDot part"></span>
+        Delvis
+      </div>
 
-
-  <div class="legend">
-
-    <span>🟢 Tillgänglig</span>
-    <span>🟡 Delvis</span>
-    <span>🔴 Ej tillgänglig</span>
-    <span>⬜ Helg</span>
-
-  </div>
-
-
-  <div class="note">
-
-    <div class="notehead">
-
-      <h3 id="noteTitle">
-        Notering
-      </h3>
-
-      <span
-        class="status"
-        id="status">
-      </span>
-
-    </div>
-
-
-    <div class="hint">
-      Alla vardagar är tillgängliga tills någon anger annat.
-    </div>
-
-
-    <textarea
-      id="note"
-      maxlength="500"
-      placeholder="Skriv en notering som alla i gruppen kan se…">
-    </textarea>
-
-
-    <div class="actions">
-
-      <button
-        id="week">
-        Hela arbetsveckan
-      </button>
-
-      <button
-        class="save"
-        id="save">
-        Spara notering
-      </button>
-
-    </div>
-
-
-    <div
-      class="msg"
-      id="msg"
-      aria-live="polite">
+      <div class="legendItem">
+        <span class="legendDot no"></span>
+        Frånvarande
+      </div>
     </div>
 
   </div>
 
+  <div class="noteBox">
+    <h3>Anteckning för vald dag</h3>
+    <textarea id="note" placeholder="Skriv en anteckning som alla kan se..."></textarea>
+    <button class="saveBtn" id="saveNote">💾 Spara</button>
+  </div>
 
-  <div class="connection">
-
-    <span
-      class="dot"
-      id="connectionDot">
-    </span>
-
-    <span id="connectionText">
-      Ansluter till kalendern…
-    </span>
-
+  <div class="connection" id="connection">
+    Ansluter till kalendern...
   </div>
 
 </div>
 
-
 <script type="module">
 
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
   getFirestore,
   doc,
   getDoc,
   setDoc,
-  deleteDoc,
   onSnapshot,
-  collection,
-  query,
-  where,
-  writeBatch
+  collection
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
-/* =========================
+/* =========================================================
    FIREBASE
-   ========================= */
+   ========================================================= */
 
 const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyDf6bd0Fi7PG4lOlVdw5Ie-mx3y20hn2ZY",
-
-  authDomain:
-    "newsec-elgruppen.firebaseapp.com",
-
-  projectId:
-    "newsec-elgruppen",
-
-  storageBucket:
-    "newsec-elgruppen.firebasestorage.app",
-
-  messagingSenderId:
-    "460978187079",
-
-  appId:
-    "1:460978187079:web:404760825c79fd218b7a62"
-
+  apiKey: "AIzaSyDf6bd0Fi7PG4lOlVdw5Ie-mx3y20hn2ZY",
+  authDomain: "newsec-elgruppen.firebaseapp.com",
+  projectId: "newsec-elgruppen",
+  storageBucket: "newsec-elgruppen.firebasestorage.app",
+  messagingSenderId: "460978187079",
+  appId: "1:460978187079:web:404760825c79fd218b7a62"
 };
 
-
-const app =
-  initializeApp(firebaseConfig);
-
-const db =
-  getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 
-/* =========================
+/* =========================================================
    PERSONER
-   ========================= */
+   ========================================================= */
 
 const people = [
-
-  ["Pétur","#2878df"],
-
-  ["Niclas","#7354d8"],
-
-  ["Michael","#31a86a"],
-
-  ["Ivan","#ed8a1a"],
-
-  ["Max","#e56b9d"]
-
+  "Pétur",
+  "Niclas",
+  "Michael",
+  "Ivan",
+  "Max"
 ];
 
-
-const dayNames = [
-
-  "Mån",
-  "Tis",
-  "Ons",
-  "Tor",
-  "Fre",
-  "Lör",
-  "Sön"
-
-];
+let currentPerson = people[0];
 
 
-/* =========================
-   STATE
-   ========================= */
+/* =========================================================
+   KALENDER
+   ========================================================= */
 
-let who = 0;
+let currentWeek = monday(new Date());
 
+/*
+  selected:
+  0 = måndag
+  1 = tisdag
+  2 = onsdag
+  3 = torsdag
+  4 = fredag
+*/
 let selected = 0;
 
-let weekOffset = 0;
 
-let records = new Map();
+/*
+  Cache för ALLA personers poster.
 
-let unsubscribe = null;
+  Denna används bland annat för färgmarkeringarna
+  bredvid namnen högst upp.
+*/
+let allCalendarRecords = new Map();
 
-
-/* =========================
-   ELEMENT
-   ========================= */
-
-const peopleEl =
-  document.getElementById("people");
-
-const daysEl =
-  document.getElementById("days");
-
-const cellsEl =
-  document.getElementById("cells");
-
-const rangeEl =
-  document.getElementById("range");
-
-const noteEl =
-  document.getElementById("note");
-
-const titleEl =
-  document.getElementById("noteTitle");
-
-const statusEl =
-  document.getElementById("status");
-
-const msgEl =
-  document.getElementById("msg");
+let unsubscribeAll = null;
 
 
-/* =========================
-   DATUM
-   ========================= */
+/* =========================================================
+   DATUMFUNKTIONER
+   ========================================================= */
 
-function monday(){
+function monday(d){
 
-  const d =
-    new Date();
+  const x = new Date(d);
+  const day = x.getDay();
 
-  d.setHours(
-    12,0,0,0
-  );
+  const diff = day === 0 ? -6 : 1 - day;
 
-  const day =
-    (d.getDay()+6)%7;
+  x.setDate(x.getDate() + diff);
+  x.setHours(0,0,0,0);
 
-  d.setDate(
-    d.getDate()
-    - day
-    + weekOffset*7
-  );
-
-  return d;
-
+  return x;
 }
 
 
 function dateKey(d){
 
-  return (
-
-    d.getFullYear()
-    + "-"
-    + String(
-        d.getMonth()+1
-      ).padStart(2,"0")
-    + "-"
-    + String(
-        d.getDate()
-      ).padStart(2,"0")
-
-  );
-
+  return d.getFullYear() + "-" +
+    String(d.getMonth()+1).padStart(2,"0") + "-" +
+    String(d.getDate()).padStart(2,"0");
 }
 
 
-function docId(
-  personName,
-  d
-){
+function docId(personName,d){
 
-  return (
-
-    personName
-    + "_"
-    + dateKey(d)
-
-  ).replace(
-    /[^A-Za-z0-9ÅÄÖåäöÉé_-]/g,
-    "_"
-  );
-
+  return (personName + "_" + dateKey(d))
+    .replace(/[^A-Za-z0-9ÅÄÖåäöÉé_-]/g,"_");
 }
 
 
-function fmt(d){
+function selectedDate(){
 
-  return (
+  const d = new Date(currentWeek);
 
-    d.getDate()
-    + " "
-    + d
-      .toLocaleDateString(
-        "sv-SE",
-        {
-          month:"short"
-        }
-      )
-      .replace(".","")
+  d.setDate(d.getDate() + selected);
 
-  );
-
+  return d;
 }
 
 
-/* =========================
+/* =========================================================
    STATUS
-   ========================= */
+   ========================================================= */
 
-function getRecord(
-  personName,
-  d
-){
+function getRecord(personName,d){
 
-  return (
-    records.get(
-      docId(
-        personName,
-        d
-      )
-    )
-    || null
-  );
+  const id = docId(personName,d);
 
+  return allCalendarRecords.get(id) || null;
 }
 
 
-function getStatus(
-  personName,
-  d
-){
+function getStatus(personName,d){
 
-  const record =
-    getRecord(
-      personName,
-      d
-    );
+  const record = getRecord(personName,d);
 
-  return (
-    record?.status
-    || "ok"
-  );
+  /*
+    Om det inte finns någon sparad post är personen
+    automatiskt tillgänglig.
+  */
 
+  return record?.status || "ok";
 }
 
 
-/* =========================
-   PERSONER
-   ========================= */
+function statusText(status){
+
+  if(status === "no") return "Frånvarande";
+  if(status === "part") return "Delvis tillgänglig";
+
+  return "Tillgänglig";
+}
+
+
+/* =========================================================
+   PERSONER HÖGST UPP
+   ========================================================= */
 
 function renderPeople(){
 
-  peopleEl.innerHTML = "";
+  const container = document.getElementById("people");
 
-  people.forEach(
-    (p,i)=>{
+  container.innerHTML = "";
 
-      const b =
-        document.createElement(
-          "button"
-        );
+  /*
+    VIKTIG ÄNDRING:
 
-      b.className =
-        "person"
-        + (
-          i===who
-          ? " active"
-          : ""
-        );
+    Färgen bredvid varje namn hämtas nu från
+    personens status för den DAG SOM ÄR VALD
+    i kalendern.
 
-      b.innerHTML =
+    Den är alltså inte längre en fast personfärg.
+  */
 
-        '<span style="' +
-        'display:inline-block;' +
-        'width:9px;' +
-        'height:9px;' +
-        'border-radius:50%;' +
-        'background:'+p[1]+';' +
-        'margin-right:6px">' +
-        '</span>' +
+  const d = selectedDate();
 
-        p[0];
+  people.forEach(person => {
 
+    const button = document.createElement("button");
 
-      b.onclick = ()=>{
+    button.className =
+      "person" +
+      (person === currentPerson ? " active" : "");
 
-        who = i;
+    const status = getStatus(person,d);
 
-        selected = 0;
+    const dot = document.createElement("span");
 
-        subscribe();
+    dot.className =
+      "personStatusDot " + status;
 
-        render();
+    button.appendChild(dot);
 
-      };
+    button.appendChild(
+      document.createTextNode(person)
+    );
 
+    button.addEventListener("click", () => {
 
-      peopleEl.appendChild(b);
+      currentPerson = person;
 
-    }
-  );
+      render();
+
+    });
+
+    container.appendChild(button);
+
+  });
 
 }
 
 
-/* =========================
-   KALENDER
-   ========================= */
+/* =========================================================
+   VECKA
+   ========================================================= */
+
+function renderWeek(){
+
+  const title = document.getElementById("weekTitle");
+
+  const friday = new Date(currentWeek);
+
+  friday.setDate(friday.getDate()+4);
+
+  const months = [
+    "jan","feb","mar","apr","maj","jun",
+    "jul","aug","sep","okt","nov","dec"
+  ];
+
+  title.textContent =
+    currentWeek.getDate() + " " +
+    months[currentWeek.getMonth()] +
+    " – " +
+    friday.getDate() + " " +
+    months[friday.getMonth()] +
+    " " +
+    friday.getFullYear();
+
+
+  const daysContainer =
+    document.getElementById("days");
+
+  daysContainer.innerHTML = "";
+
+
+  for(let i=0;i<7;i++){
+
+    const d = new Date(currentWeek);
+
+    d.setDate(d.getDate()+i);
+
+    const day = document.createElement("div");
+
+    day.className = "day";
+
+    if(i >= 5){
+
+      day.classList.add("weekend");
+
+    }
+
+
+    if(i === selected){
+
+      day.classList.add("selected");
+
+    }
+
+
+    const num = document.createElement("div");
+
+    num.className = "dayNum";
+
+    num.textContent = d.getDate();
+
+    day.appendChild(num);
+
+
+    const circle = document.createElement("div");
+
+    circle.className = "circle";
+
+
+    /*
+      Helgen är fortfarande inaktiverad.
+    */
+
+    if(i >= 5){
+
+      circle.classList.add("ok");
+      circle.textContent = "–";
+
+    }else{
+
+      const status =
+        getStatus(currentPerson,d);
+
+      circle.classList.add(status);
+
+      if(status === "no"){
+        circle.textContent = "✕";
+      }
+      else if(status === "part"){
+        circle.textContent = "•";
+      }
+      else{
+        circle.textContent = "✓";
+      }
+
+    }
+
+
+    day.appendChild(circle);
+
+
+    if(i < 5){
+
+      day.addEventListener("click", async () => {
+
+        selected = i;
+
+        render();
+
+      });
+
+    }
+
+
+    daysContainer.appendChild(day);
+
+  }
+
+}
+
+
+/* =========================================================
+   ANTECKNING
+   ========================================================= */
+
+function renderNote(){
+
+  const d = selectedDate();
+
+  const record =
+    getRecord(currentPerson,d);
+
+  document.getElementById("note").value =
+    record?.note || "";
+
+}
+
+
+/* =========================================================
+   HELA VYN
+   ========================================================= */
 
 function render(){
 
   renderPeople();
 
-  const base =
-    monday();
+  renderWeek();
 
-  const end =
-    new Date(base);
+  renderNote();
 
-  end.setDate(
-    end.getDate()+6
+}
+
+
+/* =========================================================
+   ÄNDRA STATUS VID KLICK
+   ========================================================= */
+
+document.getElementById("days")
+  .addEventListener("click", async () => {
+
+    /*
+      Hanteras av de individuella day-listeners.
+    */
+
+  });
+
+
+/*
+  Eftersom kalendercellerna skapas dynamiskt ligger
+  själva statusändringen i en separat funktion.
+*/
+
+async function changeStatus(){
+
+  const d = selectedDate();
+
+  const id =
+    docId(currentPerson,d);
+
+  const current =
+    getStatus(currentPerson,d);
+
+  let next;
+
+  if(current === "ok"){
+    next = "part";
+  }
+  else if(current === "part"){
+    next = "no";
+  }
+  else{
+    next = "ok";
+  }
+
+  const existing =
+    getRecord(currentPerson,d);
+
+  await setDoc(
+    doc(db,"calendar",id),
+    {
+      person:currentPerson,
+      date:dateKey(d),
+      status:next,
+      note:existing?.note || "",
+      updatedAt:Date.now()
+    }
   );
 
-
-  rangeEl.textContent =
-    fmt(base)
-    + " – "
-    + fmt(end);
+}
 
 
-  daysEl.innerHTML = "";
+/*
+  Bygg om kalendern med korrekt klickfunktion.
+*/
 
-  cellsEl.innerHTML = "";
+function renderWeekWithStatusClick(){
+
+  const title =
+    document.getElementById("weekTitle");
+
+  const friday =
+    new Date(currentWeek);
+
+  friday.setDate(friday.getDate()+4);
+
+  const months = [
+    "jan","feb","mar","apr","maj","jun",
+    "jul","aug","sep","okt","nov","dec"
+  ];
+
+  title.textContent =
+    currentWeek.getDate() + " " +
+    months[currentWeek.getMonth()] +
+    " – " +
+    friday.getDate() + " " +
+    months[friday.getMonth()] +
+    " " +
+    friday.getFullYear();
 
 
-  for(
-    let i=0;
-    i<7;
-    i++
-  ){
+  const daysContainer =
+    document.getElementById("days");
+
+  daysContainer.innerHTML = "";
+
+
+  for(let i=0;i<7;i++){
 
     const d =
-      new Date(base);
+      new Date(currentWeek);
 
-    d.setDate(
-      d.getDate()+i
-    );
+    d.setDate(d.getDate()+i);
 
+    const day =
+      document.createElement("div");
 
-    const weekend =
-      i>4;
-
-
-    const h =
-      document.createElement(
-        "div"
-      );
-
-    h.className =
-      "day"
-      + (
-        weekend
-        ? " weekend"
-        : ""
-      );
+    day.className = "day";
 
 
-    h.innerHTML =
-      dayNames[i]
-      + "<b>"
-      + d.getDate()
-      + "</b>";
+    if(i >= 5){
 
-
-    daysEl.appendChild(h);
-
-
-    const c =
-      document.createElement(
-        "button"
-      );
-
-
-    c.className =
-      "cell"
-      + (
-        weekend
-        ? " weekend"
-        : ""
-      )
-      + (
-        selected===i
-        && !weekend
-        ? " selected"
-        : ""
-      );
-
-
-    if(weekend){
-
-      c.disabled = true;
-
-      c.innerHTML =
-        '<span style="color:#aaa">—</span>';
+      day.classList.add("weekend");
 
     }
 
+
+    if(i === selected){
+
+      day.classList.add("selected");
+
+    }
+
+
+    const num =
+      document.createElement("div");
+
+    num.className = "dayNum";
+
+    num.textContent = d.getDate();
+
+    day.appendChild(num);
+
+
+    const circle =
+      document.createElement("div");
+
+    circle.className = "circle";
+
+
+    if(i >= 5){
+
+      circle.classList.add("ok");
+
+      circle.textContent = "–";
+
+    }
     else{
 
-      const s =
-        getStatus(
-          people[who][0],
-          d
-        );
+      const status =
+        getStatus(currentPerson,d);
 
+      circle.classList.add(status);
 
-      let icon;
-
-      if(s==="ok")
-        icon="✓";
-
-      else if(s==="part")
-        icon="−";
-
-      else
-        icon="×";
-
-
-      c.innerHTML =
-        '<span class="mark '
-        + s
-        + '">'
-        + icon
-        + '</span>';
-
-
-      c.onclick =
-        async ()=>{
-
-          selected = i;
-
-
-          const current =
-            getStatus(
-              people[who][0],
-              d
-            );
-
-
-          let next;
-
-
-          if(current==="ok")
-            next="part";
-
-          else if(current==="part")
-            next="no";
-
-          else
-            next="ok";
-
-
-          const person =
-            people[who][0];
-
-
-          const ref =
-            doc(
-              db,
-              "calendar",
-              docId(
-                person,
-                d
-              )
-            );
-
-
-          try{
-
-            const existing =
-              getRecord(
-                person,
-                d
-              );
-
-
-            if(
-              next==="ok"
-              &&
-              !(existing?.note||"").trim()
-            ){
-
-              await deleteDoc(ref);
-
-            }
-
-            else{
-
-              await setDoc(
-                ref,
-                {
-                  person:person,
-                  date:dateKey(d),
-                  status:next,
-                  note:
-                    existing?.note || "",
-                  updatedAt:
-                    Date.now()
-                }
-              );
-
-            }
-
-
-            showMsg(
-              "✓ Status sparad"
-            );
-
-          }
-
-          catch(error){
-
-            console.error(error);
-
-            showMsg(
-              "Kunde inte spara. Kontrollera Firestore-reglerna."
-            );
-
-          }
-
-
-          render();
-
-        };
+      if(status === "no"){
+        circle.textContent = "✕";
+      }
+      else if(status === "part"){
+        circle.textContent = "•";
+      }
+      else{
+        circle.textContent = "✓";
+      }
 
     }
 
 
-    cellsEl.appendChild(c);
+    day.appendChild(circle);
+
+
+    if(i < 5){
+
+      day.addEventListener(
+        "click",
+        async () => {
+
+          /*
+            Första klicket på en annan dag:
+            välj dagen.
+
+            Om samma dag redan är vald:
+            ändra status.
+
+            Detta behåller samma enkla
+            mobilbeteende.
+          */
+
+          if(selected !== i){
+
+            selected = i;
+
+            render();
+
+            return;
+
+          }
+
+          await changeStatus();
+
+        }
+      );
+
+    }
+
+
+    daysContainer.appendChild(day);
 
   }
 
+}
 
-  loadNote();
+
+/* =========================================================
+   OVERSKRIV RENDER WEEK MED KORREKT FUNKTION
+   ========================================================= */
+
+function renderCalendar(){
+
+  renderPeople();
+
+  renderWeekWithStatusClick();
+
+  renderNote();
 
 }
 
 
-/* =========================
-   NOTERING
-   ========================= */
+/* =========================================================
+   VECKOKNAPPAR
+   ========================================================= */
 
-function loadNote(){
+document.getElementById("prevWeek")
+  .addEventListener("click", () => {
 
-  const base =
-    monday();
-
-  const d =
-    new Date(base);
-
-  d.setDate(
-    d.getDate()+selected
-  );
-
-
-  const person =
-    people[who][0];
-
-
-  const record =
-    getRecord(
-      person,
-      d
+    currentWeek.setDate(
+      currentWeek.getDate()-7
     );
 
+    selected = 0;
 
-  noteEl.value =
-    record?.note || "";
+    renderCalendar();
 
-
-  titleEl.textContent =
-    person
-    + " · "
-    + dayNames[selected]
-    + " "
-    + fmt(d);
+  });
 
 
-  const s =
-    record?.status
-    || "ok";
+document.getElementById("nextWeek")
+  .addEventListener("click", () => {
+
+    currentWeek.setDate(
+      currentWeek.getDate()+7
+    );
+
+    selected = 0;
+
+    renderCalendar();
+
+  });
 
 
-  statusEl.textContent =
-    s==="ok"
-    ? "Tillgänglig"
-    : s==="part"
-    ? "Delvis"
-    : "Ej tillgänglig";
+document.getElementById("todayBtn")
+  .addEventListener("click", () => {
+
+    const now = new Date();
+
+    currentWeek = monday(now);
+
+    const jsDay = now.getDay();
+
+    /*
+      Mån = 0 ... Fre = 4
+      Lör/Sön flyttas till fredag.
+    */
+
+    selected =
+      Math.min(
+        4,
+        jsDay === 0 ? 4 : jsDay-1
+      );
+
+    renderCalendar();
+
+  });
 
 
-  statusEl.style.background =
-    s==="ok"
-    ? "#e8f7ef"
-    : s==="part"
-    ? "#fff3d5"
-    : "#fde9e7";
+/* =========================================================
+   IDAG – VISA ALLAS STATUS
+   ========================================================= */
+
+const todayAllBtn =
+  document.getElementById("todayAllBtn");
+
+const todayOverview =
+  document.getElementById("todayOverview");
 
 
-  statusEl.style.color =
-    s==="ok"
-    ? "#16764b"
-    : s==="part"
-    ? "#866000"
-    : "#a9312b";
+todayAllBtn.addEventListener(
+  "click",
+  async () => {
 
-}
+    if(todayOverview.classList.contains("show")){
 
+      todayOverview.classList.remove("show");
 
-/* =========================
-   IDAG – ALLA PERSONER
-   ========================= */
+      return;
+
+    }
+
+    await renderTodayOverview();
+
+    todayOverview.classList.add("show");
+
+  }
+);
+
 
 async function renderTodayOverview(){
 
   const today =
     new Date();
 
-  today.setHours(
-    12,0,0,0
-  );
-
-
-  const dateText =
-    today.toLocaleDateString(
-      "sv-SE",
-      {
-        weekday:"long",
-        day:"numeric",
-        month:"long",
-        year:"numeric"
-      }
-    );
-
-
-  document
-    .getElementById(
-      "todayOverviewDate"
-    )
-    .textContent =
-      "Idag · "
-      + dateText;
-
-
   const container =
-    document.getElementById(
-      "todayOverviewPeople"
-    );
-
+    document.getElementById("todayOverview");
 
   container.innerHTML = "";
 
 
   /*
-   * VIKTIGT:
-   * Här hämtas dagens dokument separat
-   * för ALLA fem personer.
-   *
-   * Vi använder alltså INTE records för
-   * den person som är vald i kalendern.
-   */
+    Vi läser varje person separat.
 
-  const results =
-    await Promise.all(
+    Detta gör att "Idag" verkligen visar
+    alla personers egna status.
+  */
 
-      people.map(
-        async person=>{
-
-          const name =
-            person[0];
-
-
-          try{
-
-            const snapshot =
-              await getDoc(
-                doc(
-                  db,
-                  "calendar",
-                  docId(
-                    name,
-                    today
-                  )
-                )
-              );
-
-
-            if(
-              snapshot.exists()
-            ){
-
-              const data =
-                snapshot.data();
-
-
-              return {
-
-                name:name,
-
-                status:
-                  data.status
-                  || "ok"
-
-              };
-
-            }
-
-          }
-
-          catch(error){
-
-            console.error(
-              "Kunde inte läsa dagens status för "
-              + name,
-              error
-            );
-
-          }
-
-
-          /*
-           * Finns inget dokument betyder
-           * automatiskt tillgänglig.
-           */
-
-          return {
-
-            name:name,
-
-            status:"ok"
-
-          };
-
-        }
-
-      )
-
-    );
-
-
-  results.forEach(
-    result=>{
-
-      const name =
-        result.name;
-
-      const s =
-        result.status;
-
-
-      let text;
-
-
-      if(s==="ok")
-        text="Tillgänglig";
-
-      else if(s==="part")
-        text="Delvis";
-
-      else
-        text="Ej tillgänglig";
-
-
-      const row =
-        document.createElement(
-          "div"
-        );
-
-
-      row.className =
-        "todayPerson";
-
-
-      row.innerHTML =
-
-        '<span class="todayPersonName">'
-        + name
-        + '</span>'
-
-        +
-
-        '<span class="todayPersonStatus">'
-
-        +
-
-        '<span class="todayStatusDot '
-        + s
-        + '"></span>'
-
-        +
-
-        text
-
-        +
-
-        '</span>';
-
-
-      container.appendChild(
-        row
-      );
-
-    }
-
-  );
-
-}
-
-
-/* =========================
-   MEDDELANDE
-   ========================= */
-
-function showMsg(text){
-
-  msgEl.textContent =
-    text;
-
-  setTimeout(
-    ()=>{
-      msgEl.textContent="";
-    },
-    2200
-  );
-
-}
-
-
-/* =========================
-   FIRESTORE LIVE
-   ========================= */
-
-function subscribe(){
-
-  if(unsubscribe)
-    unsubscribe();
-
-
-  records =
-    new Map();
-
-
-  const person =
-    people[who][0];
-
-
-  const q =
-    query(
-
-      collection(
-        db,
-        "calendar"
-      ),
-
-      where(
-        "person",
-        "==",
-        person
-      )
-
-    );
-
-
-  unsubscribe =
-    onSnapshot(
-
-      q,
-
-      snapshot=>{
-
-        records =
-          new Map();
-
-
-        snapshot.forEach(
-          docSnap=>{
-
-            records.set(
-              docSnap.id,
-              docSnap.data()
-            );
-
-          }
-
-        );
-
-
-        document
-          .getElementById(
-            "connectionDot"
-          )
-          .classList.add(
-            "live"
-          );
-
-
-        document
-          .getElementById(
-            "connectionText"
-          )
-          .textContent =
-            "Live – ändringar synkas automatiskt";
-
-
-        render();
-
-
-        if(
-          document
-            .getElementById(
-              "todayOverview"
-            )
-            .classList.contains(
-              "visible"
-            )
-        ){
-
-          renderTodayOverview();
-
-        }
-
-      },
-
-
-      error=>{
-
-        console.error(error);
-
-
-        document
-          .getElementById(
-            "connectionDot"
-          )
-          .classList.remove(
-            "live"
-          );
-
-
-        document
-          .getElementById(
-            "connectionText"
-          )
-          .textContent =
-            "Kunde inte ansluta till databasen";
-
-      }
-
-    );
-
-}
-
-
-/* =========================
-   VECKA
-   ========================= */
-
-document
-  .getElementById("prev")
-  .onclick =
-  ()=>{
-
-    weekOffset--;
-
-    selected=0;
-
-    render();
-
-  };
-
-
-document
-  .getElementById("next")
-  .onclick =
-  ()=>{
-
-    weekOffset++;
-
-    selected=0;
-
-    render();
-
-  };
-
-
-document
-  .getElementById("today")
-  .onclick =
-  ()=>{
-
-    weekOffset=0;
-
-    selected =
-      Math.min(
-        4,
-        Math.max(
-          0,
-          (new Date().getDay()+6)%7
-        )
-      );
-
-    render();
-
-  };
-
-
-/* =========================
-   IDAG-KNAPP
-   ========================= */
-
-document
-  .getElementById(
-    "todayOverviewButton"
-  )
-  .onclick =
-  async ()=>{
-
-    await renderTodayOverview();
-
-
-    document
-      .getElementById(
-        "todayOverview"
-      )
-      .classList.add(
-        "visible"
-      );
-
-  };
-
-
-document
-  .getElementById(
-    "todayClose"
-  )
-  .onclick =
-  ()=>{
-
-    document
-      .getElementById(
-        "todayOverview"
-      )
-      .classList.remove(
-        "visible"
-      );
-
-  };
-
-
-/* =========================
-   HELA ARBETSVECKAN
-   ========================= */
-
-document
-  .getElementById("week")
-  .onclick =
-  async ()=>{
-
-    const base =
-      monday();
-
-    const batch =
-      writeBatch(db);
-
-    const person =
-      people[who][0];
-
-
-    for(
-      let i=0;
-      i<5;
-      i++
-    ){
-
-      const d =
-        new Date(base);
-
-      d.setDate(
-        d.getDate()+i
-      );
-
-
-      const record =
-        getRecord(
-          person,
-          d
-        );
-
-
-      const ref =
-        doc(
-          db,
-          "calendar",
-          docId(
-            person,
-            d
-          )
-        );
-
-
-      if(record?.note){
-
-        batch.set(
-          ref,
-          {
-            ...record,
-            status:"ok",
-            updatedAt:
-              Date.now()
-          }
-        );
-
-      }
-
-      else{
-
-        batch.delete(ref);
-
-      }
-
-    }
-
-
-    try{
-
-      await batch.commit();
-
-
-      showMsg(
-        "✓ Hela arbetsveckan är markerad som tillgänglig"
-      );
-
-
-      render();
-
-    }
-
-    catch(error){
-
-      console.error(error);
-
-
-      showMsg(
-        "Kunde inte spara veckan."
-      );
-
-    }
-
-  };
-
-
-/* =========================
-   SPARA NOTERING
-   ========================= */
-
-document
-  .getElementById("save")
-  .onclick =
-  async ()=>{
-
-    const base =
-      monday();
-
-    const d =
-      new Date(base);
-
-    d.setDate(
-      d.getDate()+selected
-    );
-
-
-    const person =
-      people[who][0];
-
-
-    const text =
-      noteEl.value.trim();
-
-
-    const record =
-      getRecord(
-        person,
-        d
-      );
-
+  for(const name of people){
 
     const ref =
       doc(
         db,
         "calendar",
-        docId(
-          person,
-          d
-        )
+        docId(name,today)
       );
 
+    const snap =
+      await getDoc(ref);
 
-    try{
+    const data =
+      snap.exists()
+        ? snap.data()
+        : null;
 
-      if(
-        !text
-        &&
-        (
-          !record
-          ||
-          record.status==="ok"
-        )
-      ){
+    const status =
+      data?.status || "ok";
 
-        await deleteDoc(ref);
+
+    const row =
+      document.createElement("div");
+
+    row.className = "todayRow";
+
+
+    const nameEl =
+      document.createElement("span");
+
+    nameEl.textContent = name;
+
+
+    const statusEl =
+      document.createElement("span");
+
+    statusEl.className = "todayStatus";
+
+
+    const dot =
+      document.createElement("span");
+
+    dot.className =
+      "statusDot " + status;
+
+
+    statusEl.appendChild(dot);
+
+    statusEl.appendChild(
+      document.createTextNode(
+        statusText(status)
+      )
+    );
+
+
+    row.appendChild(nameEl);
+
+    row.appendChild(statusEl);
+
+    container.appendChild(row);
+
+  }
+
+}
+
+
+/* =========================================================
+   SPARA ANTECKNING
+   ========================================================= */
+
+document.getElementById("saveNote")
+  .addEventListener("click", async () => {
+
+    const d =
+      selectedDate();
+
+    const id =
+      docId(currentPerson,d);
+
+    const existing =
+      getRecord(currentPerson,d);
+
+    const note =
+      document.getElementById("note").value;
+
+
+    await setDoc(
+      doc(db,"calendar",id),
+      {
+        person:currentPerson,
+        date:dateKey(d),
+        status:existing?.status || "ok",
+        note:note,
+        updatedAt:Date.now()
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   FIRESTORE – EN GEMENSAM REALTIDSLYSSNARE
+   ========================================================= */
+
+function subscribeToCalendar(){
+
+  if(unsubscribeAll){
+
+    unsubscribeAll();
+
+  }
+
+
+  unsubscribeAll =
+    onSnapshot(
+      collection(db,"calendar"),
+
+      snapshot => {
+
+        allCalendarRecords =
+          new Map();
+
+        snapshot.forEach(item => {
+
+          allCalendarRecords.set(
+            item.id,
+            item.data()
+          );
+
+        });
+
+
+        document.getElementById(
+          "connection"
+        ).textContent =
+          "🟢 Ansluten – ändringar uppdateras direkt";
+
+
+        /*
+          Viktigt:
+
+          När någon annan person ändrar sin status
+          uppdateras även färgmarkeringen bredvid
+          personens namn högst upp.
+
+          Detta sker automatiskt för den valda dagen.
+        */
+
+        renderCalendar();
+
+      },
+
+      error => {
+
+        console.error(error);
+
+        document.getElementById(
+          "connection"
+        ).textContent =
+          "🔴 Kunde inte ansluta till kalendern";
 
       }
+    );
 
-      else{
-
-        await setDoc(
-          ref,
-          {
-            person:person,
-            date:dateKey(d),
-            status:
-              record?.status || "ok",
-            note:text,
-            updatedAt:
-              Date.now()
-          }
-        );
-
-      }
+}
 
 
-      showMsg(
-        "✓ Noteringen är sparad för gruppen"
-      );
-
-
-      if(
-        document
-          .getElementById(
-            "todayOverview"
-          )
-          .classList.contains(
-            "visible"
-          )
-      ){
-
-        renderTodayOverview();
-
-      }
-
-    }
-
-    catch(error){
-
-      console.error(error);
-
-
-      showMsg(
-        "Kunde inte spara noteringen."
-      );
-
-    }
-
-  };
-
-
-/* =========================
+/* =========================================================
    START
-   ========================= */
+   ========================================================= */
 
-subscribe();
+subscribeToCalendar();
 
-render();
+renderCalendar();
 
 </script>
 
