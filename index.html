@@ -12,8 +12,6 @@
   --ok:#35b86b;
   --part:#f2c94c;
   --no:#e74c3c;
-  --grey:#d9dde2;
-  --light:#f5f7fa;
   --text:#1d2733;
 }
 
@@ -54,7 +52,6 @@ header p{
   padding:12px;
 }
 
-/* Personerna */
 .people{
   display:flex;
   gap:7px;
@@ -93,7 +90,6 @@ header p{
   border-radius:50%;
   margin-right:5px;
   vertical-align:middle;
-  background:var(--ok);
   box-shadow:0 0 0 1px rgba(0,0,0,.08);
 }
 
@@ -109,7 +105,6 @@ header p{
   background:var(--no);
 }
 
-/* Idag-knappen */
 .todayAllBtn{
   width:100%;
   margin-top:9px;
@@ -122,10 +117,6 @@ header p{
   padding:11px;
   box-shadow:0 1px 4px rgba(0,0,0,.08);
   cursor:pointer;
-}
-
-.todayAllBtn:active{
-  transform:scale(.99);
 }
 
 .todayOverview{
@@ -180,7 +171,6 @@ header p{
   background:var(--no);
 }
 
-/* Kalender */
 .calendarBox{
   background:white;
   margin-top:12px;
@@ -299,7 +289,6 @@ header p{
   background:var(--no);
 }
 
-/* Legend */
 .legend{
   display:flex;
   justify-content:center;
@@ -334,7 +323,7 @@ header p{
   background:var(--no);
 }
 
-/* Anteckning */
+/* Anteckningssammanställning */
 .noteBox{
   background:white;
   margin-top:12px;
@@ -346,6 +335,34 @@ header p{
 .noteBox h3{
   margin:0 0 8px;
   font-size:14px;
+}
+
+.weekNotes{
+  margin-bottom:10px;
+}
+
+.weekNote{
+  padding:8px 0;
+  border-bottom:1px solid #edf0f3;
+  font-size:13px;
+  line-height:1.4;
+}
+
+.weekNote:last-child{
+  border-bottom:0;
+}
+
+.weekNoteDate{
+  display:block;
+  font-weight:700;
+  color:var(--blue);
+  margin-bottom:2px;
+}
+
+.noNotes{
+  color:#8a939d;
+  font-size:13px;
+  padding:4px 0 8px;
 }
 
 textarea{
@@ -375,10 +392,6 @@ textarea:focus{
   font-size:14px;
   font-weight:700;
   cursor:pointer;
-}
-
-.saveBtn:active{
-  background:var(--blue-dark);
 }
 
 .connection{
@@ -421,6 +434,7 @@ textarea:focus{
   <div class="calendarBox">
 
     <div class="weekNav">
+
       <button class="navBtn" id="prevWeek">‹</button>
 
       <div>
@@ -429,6 +443,7 @@ textarea:focus{
       </div>
 
       <button class="navBtn" id="nextWeek">›</button>
+
     </div>
 
     <div class="weekdays">
@@ -463,9 +478,20 @@ textarea:focus{
   </div>
 
   <div class="noteBox">
-    <h3>Anteckning för vald dag</h3>
-    <textarea id="note" placeholder="Skriv en anteckning som alla kan se..."></textarea>
-    <button class="saveBtn" id="saveNote">💾 Spara</button>
+
+    <h3>Anteckningar för veckan</h3>
+
+    <div class="weekNotes" id="weekNotes"></div>
+
+    <textarea
+      id="note"
+      placeholder="Skriv en anteckning för vald dag..."
+    ></textarea>
+
+    <button class="saveBtn" id="saveNote">
+      💾 Spara
+    </button>
+
   </div>
 
   <div class="connection" id="connection">
@@ -473,6 +499,7 @@ textarea:focus{
   </div>
 
 </div>
+
 
 <script type="module">
 
@@ -526,31 +553,14 @@ let currentPerson = people[0];
    ========================================================= */
 
 let currentWeek = monday(new Date());
-
-/*
-  selected:
-  0 = måndag
-  1 = tisdag
-  2 = onsdag
-  3 = torsdag
-  4 = fredag
-*/
 let selected = 0;
 
-
-/*
-  Cache för ALLA personers poster.
-
-  Denna används bland annat för färgmarkeringarna
-  bredvid namnen högst upp.
-*/
 let allCalendarRecords = new Map();
-
 let unsubscribeAll = null;
 
 
 /* =========================================================
-   DATUMFUNKTIONER
+   DATUM
    ========================================================= */
 
 function monday(d){
@@ -572,6 +582,7 @@ function dateKey(d){
   return d.getFullYear() + "-" +
     String(d.getMonth()+1).padStart(2,"0") + "-" +
     String(d.getDate()).padStart(2,"0");
+
 }
 
 
@@ -579,6 +590,7 @@ function docId(personName,d){
 
   return (personName + "_" + dateKey(d))
     .replace(/[^A-Za-z0-9ÅÄÖåäöÉé_-]/g,"_");
+
 }
 
 
@@ -589,18 +601,20 @@ function selectedDate(){
   d.setDate(d.getDate() + selected);
 
   return d;
+
 }
 
 
 /* =========================================================
-   STATUS
+   POSTER / STATUS
    ========================================================= */
 
 function getRecord(personName,d){
 
-  const id = docId(personName,d);
+  return allCalendarRecords.get(
+    docId(personName,d)
+  ) || null;
 
-  return allCalendarRecords.get(id) || null;
 }
 
 
@@ -608,21 +622,21 @@ function getStatus(personName,d){
 
   const record = getRecord(personName,d);
 
-  /*
-    Om det inte finns någon sparad post är personen
-    automatiskt tillgänglig.
-  */
-
   return record?.status || "ok";
+
 }
 
 
 function statusText(status){
 
-  if(status === "no") return "Frånvarande";
-  if(status === "part") return "Delvis tillgänglig";
+  if(status === "no")
+    return "Frånvarande";
+
+  if(status === "part")
+    return "Delvis tillgänglig";
 
   return "Tillgänglig";
+
 }
 
 
@@ -632,33 +646,27 @@ function statusText(status){
 
 function renderPeople(){
 
-  const container = document.getElementById("people");
+  const container =
+    document.getElementById("people");
 
   container.innerHTML = "";
-
-  /*
-    VIKTIG ÄNDRING:
-
-    Färgen bredvid varje namn hämtas nu från
-    personens status för den DAG SOM ÄR VALD
-    i kalendern.
-
-    Den är alltså inte längre en fast personfärg.
-  */
 
   const d = selectedDate();
 
   people.forEach(person => {
 
-    const button = document.createElement("button");
+    const button =
+      document.createElement("button");
 
     button.className =
       "person" +
       (person === currentPerson ? " active" : "");
 
-    const status = getStatus(person,d);
+    const status =
+      getStatus(person,d);
 
-    const dot = document.createElement("span");
+    const dot =
+      document.createElement("span");
 
     dot.className =
       "personStatusDot " + status;
@@ -690,11 +698,15 @@ function renderPeople(){
 
 function renderWeek(){
 
-  const title = document.getElementById("weekTitle");
+  const title =
+    document.getElementById("weekTitle");
 
-  const friday = new Date(currentWeek);
+  const friday =
+    new Date(currentWeek);
 
-  friday.setDate(friday.getDate()+4);
+  friday.setDate(
+    friday.getDate()+4
+  );
 
   const months = [
     "jan","feb","mar","apr","maj","jun",
@@ -719,13 +731,18 @@ function renderWeek(){
 
   for(let i=0;i<7;i++){
 
-    const d = new Date(currentWeek);
+    const d =
+      new Date(currentWeek);
 
-    d.setDate(d.getDate()+i);
+    d.setDate(
+      d.getDate()+i
+    );
 
-    const day = document.createElement("div");
+    const day =
+      document.createElement("div");
 
     day.className = "day";
+
 
     if(i >= 5){
 
@@ -741,23 +758,22 @@ function renderWeek(){
     }
 
 
-    const num = document.createElement("div");
+    const num =
+      document.createElement("div");
 
     num.className = "dayNum";
 
-    num.textContent = d.getDate();
+    num.textContent =
+      d.getDate();
 
     day.appendChild(num);
 
 
-    const circle = document.createElement("div");
+    const circle =
+      document.createElement("div");
 
     circle.className = "circle";
 
-
-    /*
-      Helgen är fortfarande inaktiverad.
-    */
 
     if(i >= 5){
 
@@ -789,13 +805,33 @@ function renderWeek(){
 
     if(i < 5){
 
-      day.addEventListener("click", async () => {
+      day.addEventListener(
+        "click",
+        async () => {
 
-        selected = i;
+          /*
+            Om man klickar på en annan dag
+            väljs den dagen.
 
-        render();
+            Klickar man igen på den redan valda
+            dagen ändras status.
+          */
 
-      });
+          if(selected !== i){
+
+            selected = i;
+
+            render();
+
+            return;
+
+          }
+
+
+          await changeStatus();
+
+        }
+      );
 
     }
 
@@ -808,59 +844,13 @@ function renderWeek(){
 
 
 /* =========================================================
-   ANTECKNING
+   ÄNDRA STATUS
    ========================================================= */
-
-function renderNote(){
-
-  const d = selectedDate();
-
-  const record =
-    getRecord(currentPerson,d);
-
-  document.getElementById("note").value =
-    record?.note || "";
-
-}
-
-
-/* =========================================================
-   HELA VYN
-   ========================================================= */
-
-function render(){
-
-  renderPeople();
-
-  renderWeek();
-
-  renderNote();
-
-}
-
-
-/* =========================================================
-   ÄNDRA STATUS VID KLICK
-   ========================================================= */
-
-document.getElementById("days")
-  .addEventListener("click", async () => {
-
-    /*
-      Hanteras av de individuella day-listeners.
-    */
-
-  });
-
-
-/*
-  Eftersom kalendercellerna skapas dynamiskt ligger
-  själva statusändringen i en separat funktion.
-*/
 
 async function changeStatus(){
 
-  const d = selectedDate();
+  const d =
+    selectedDate();
 
   const id =
     docId(currentPerson,d);
@@ -897,150 +887,106 @@ async function changeStatus(){
 }
 
 
-/*
-  Bygg om kalendern med korrekt klickfunktion.
-*/
+/* =========================================================
+   VECKANS ANTECKNINGAR
+   ========================================================= */
 
-function renderWeekWithStatusClick(){
+function renderWeekNotes(){
 
-  const title =
-    document.getElementById("weekTitle");
+  const container =
+    document.getElementById("weekNotes");
 
-  const friday =
-    new Date(currentWeek);
+  container.innerHTML = "";
 
-  friday.setDate(friday.getDate()+4);
 
-  const months = [
-    "jan","feb","mar","apr","maj","jun",
-    "jul","aug","sep","okt","nov","dec"
+  const dayNames = [
+    "Måndag",
+    "Tisdag",
+    "Onsdag",
+    "Torsdag",
+    "Fredag"
   ];
 
-  title.textContent =
-    currentWeek.getDate() + " " +
-    months[currentWeek.getMonth()] +
-    " – " +
-    friday.getDate() + " " +
-    months[friday.getMonth()] +
-    " " +
-    friday.getFullYear();
+
+  let found = false;
 
 
-  const daysContainer =
-    document.getElementById("days");
+  /*
+    Gå igenom hela arbetsveckan
+    för den valda personen.
+  */
 
-  daysContainer.innerHTML = "";
-
-
-  for(let i=0;i<7;i++){
+  for(let i=0;i<5;i++){
 
     const d =
       new Date(currentWeek);
 
-    d.setDate(d.getDate()+i);
+    d.setDate(
+      d.getDate()+i
+    );
 
-    const day =
+
+    const record =
+      getRecord(currentPerson,d);
+
+
+    if(record?.note &&
+       record.note.trim() !== ""){
+
+      found = true;
+
+
+      const note =
+        document.createElement("div");
+
+      note.className = "weekNote";
+
+
+      const date =
+        document.createElement("span");
+
+      date.className =
+        "weekNoteDate";
+
+      date.textContent =
+        dayNames[i] +
+        " " +
+        d.getDate() +
+        "/" +
+        (d.getMonth()+1);
+
+
+      const text =
+        document.createElement("div");
+
+      text.textContent =
+        record.note;
+
+
+      note.appendChild(date);
+      note.appendChild(text);
+
+      container.appendChild(note);
+
+    }
+
+  }
+
+
+  if(!found){
+
+    const empty =
       document.createElement("div");
 
-    day.className = "day";
+    empty.className =
+      "noNotes";
 
+    empty.textContent =
+      "Inga anteckningar för " +
+      currentPerson +
+      " den här veckan.";
 
-    if(i >= 5){
-
-      day.classList.add("weekend");
-
-    }
-
-
-    if(i === selected){
-
-      day.classList.add("selected");
-
-    }
-
-
-    const num =
-      document.createElement("div");
-
-    num.className = "dayNum";
-
-    num.textContent = d.getDate();
-
-    day.appendChild(num);
-
-
-    const circle =
-      document.createElement("div");
-
-    circle.className = "circle";
-
-
-    if(i >= 5){
-
-      circle.classList.add("ok");
-
-      circle.textContent = "–";
-
-    }
-    else{
-
-      const status =
-        getStatus(currentPerson,d);
-
-      circle.classList.add(status);
-
-      if(status === "no"){
-        circle.textContent = "✕";
-      }
-      else if(status === "part"){
-        circle.textContent = "•";
-      }
-      else{
-        circle.textContent = "✓";
-      }
-
-    }
-
-
-    day.appendChild(circle);
-
-
-    if(i < 5){
-
-      day.addEventListener(
-        "click",
-        async () => {
-
-          /*
-            Första klicket på en annan dag:
-            välj dagen.
-
-            Om samma dag redan är vald:
-            ändra status.
-
-            Detta behåller samma enkla
-            mobilbeteende.
-          */
-
-          if(selected !== i){
-
-            selected = i;
-
-            render();
-
-            return;
-
-          }
-
-          await changeStatus();
-
-        }
-      );
-
-    }
-
-
-    daysContainer.appendChild(day);
+    container.appendChild(empty);
 
   }
 
@@ -1048,14 +994,34 @@ function renderWeekWithStatusClick(){
 
 
 /* =========================================================
-   OVERSKRIV RENDER WEEK MED KORREKT FUNKTION
+   TEXTAREA – VALD DAG
    ========================================================= */
 
-function renderCalendar(){
+function renderNote(){
+
+  const d =
+    selectedDate();
+
+  const record =
+    getRecord(currentPerson,d);
+
+  document.getElementById("note").value =
+    record?.note || "";
+
+}
+
+
+/* =========================================================
+   HELA VYN
+   ========================================================= */
+
+function render(){
 
   renderPeople();
 
-  renderWeekWithStatusClick();
+  renderWeek();
+
+  renderWeekNotes();
 
   renderNote();
 
@@ -1075,7 +1041,7 @@ document.getElementById("prevWeek")
 
     selected = 0;
 
-    renderCalendar();
+    render();
 
   });
 
@@ -1089,7 +1055,7 @@ document.getElementById("nextWeek")
 
     selected = 0;
 
-    renderCalendar();
+    render();
 
   });
 
@@ -1097,16 +1063,14 @@ document.getElementById("nextWeek")
 document.getElementById("todayBtn")
   .addEventListener("click", () => {
 
-    const now = new Date();
+    const now =
+      new Date();
 
-    currentWeek = monday(now);
+    currentWeek =
+      monday(now);
 
-    const jsDay = now.getDay();
-
-    /*
-      Mån = 0 ... Fre = 4
-      Lör/Sön flyttas till fredag.
-    */
+    const jsDay =
+      now.getDay();
 
     selected =
       Math.min(
@@ -1114,124 +1078,9 @@ document.getElementById("todayBtn")
         jsDay === 0 ? 4 : jsDay-1
       );
 
-    renderCalendar();
+    render();
 
   });
-
-
-/* =========================================================
-   IDAG – VISA ALLAS STATUS
-   ========================================================= */
-
-const todayAllBtn =
-  document.getElementById("todayAllBtn");
-
-const todayOverview =
-  document.getElementById("todayOverview");
-
-
-todayAllBtn.addEventListener(
-  "click",
-  async () => {
-
-    if(todayOverview.classList.contains("show")){
-
-      todayOverview.classList.remove("show");
-
-      return;
-
-    }
-
-    await renderTodayOverview();
-
-    todayOverview.classList.add("show");
-
-  }
-);
-
-
-async function renderTodayOverview(){
-
-  const today =
-    new Date();
-
-  const container =
-    document.getElementById("todayOverview");
-
-  container.innerHTML = "";
-
-
-  /*
-    Vi läser varje person separat.
-
-    Detta gör att "Idag" verkligen visar
-    alla personers egna status.
-  */
-
-  for(const name of people){
-
-    const ref =
-      doc(
-        db,
-        "calendar",
-        docId(name,today)
-      );
-
-    const snap =
-      await getDoc(ref);
-
-    const data =
-      snap.exists()
-        ? snap.data()
-        : null;
-
-    const status =
-      data?.status || "ok";
-
-
-    const row =
-      document.createElement("div");
-
-    row.className = "todayRow";
-
-
-    const nameEl =
-      document.createElement("span");
-
-    nameEl.textContent = name;
-
-
-    const statusEl =
-      document.createElement("span");
-
-    statusEl.className = "todayStatus";
-
-
-    const dot =
-      document.createElement("span");
-
-    dot.className =
-      "statusDot " + status;
-
-
-    statusEl.appendChild(dot);
-
-    statusEl.appendChild(
-      document.createTextNode(
-        statusText(status)
-      )
-    );
-
-
-    row.appendChild(nameEl);
-
-    row.appendChild(statusEl);
-
-    container.appendChild(row);
-
-  }
-
-}
 
 
 /* =========================================================
@@ -1269,7 +1118,117 @@ document.getElementById("saveNote")
 
 
 /* =========================================================
-   FIRESTORE – EN GEMENSAM REALTIDSLYSSNARE
+   IDAG – VISA ALLAS STATUS
+   ========================================================= */
+
+document.getElementById("todayAllBtn")
+  .addEventListener("click", async () => {
+
+    const overview =
+      document.getElementById("todayOverview");
+
+    if(overview.classList.contains("show")){
+
+      overview.classList.remove("show");
+
+      return;
+
+    }
+
+
+    await renderTodayOverview();
+
+    overview.classList.add("show");
+
+  });
+
+
+async function renderTodayOverview(){
+
+  const today =
+    new Date();
+
+  const container =
+    document.getElementById(
+      "todayOverview"
+    );
+
+  container.innerHTML = "";
+
+
+  for(const name of people){
+
+    const ref =
+      doc(
+        db,
+        "calendar",
+        docId(name,today)
+      );
+
+
+    const snap =
+      await getDoc(ref);
+
+
+    const data =
+      snap.exists()
+        ? snap.data()
+        : null;
+
+
+    const status =
+      data?.status || "ok";
+
+
+    const row =
+      document.createElement("div");
+
+    row.className =
+      "todayRow";
+
+
+    const nameEl =
+      document.createElement("span");
+
+    nameEl.textContent =
+      name;
+
+
+    const statusEl =
+      document.createElement("span");
+
+    statusEl.className =
+      "todayStatus";
+
+
+    const dot =
+      document.createElement("span");
+
+    dot.className =
+      "statusDot " + status;
+
+
+    statusEl.appendChild(dot);
+
+    statusEl.appendChild(
+      document.createTextNode(
+        statusText(status)
+      )
+    );
+
+
+    row.appendChild(nameEl);
+    row.appendChild(statusEl);
+
+    container.appendChild(row);
+
+  }
+
+}
+
+
+/* =========================================================
+   FIRESTORE REALTID
    ========================================================= */
 
 function subscribeToCalendar(){
@@ -1290,6 +1249,7 @@ function subscribeToCalendar(){
         allCalendarRecords =
           new Map();
 
+
         snapshot.forEach(item => {
 
           allCalendarRecords.set(
@@ -1307,16 +1267,14 @@ function subscribeToCalendar(){
 
 
         /*
-          Viktigt:
-
-          När någon annan person ändrar sin status
-          uppdateras även färgmarkeringen bredvid
-          personens namn högst upp.
-
-          Detta sker automatiskt för den valda dagen.
+          Uppdaterar:
+          - kalendern
+          - personernas statusprickar
+          - veckans anteckningar
+          - anteckningen för vald dag
         */
 
-        renderCalendar();
+        render();
 
       },
 
@@ -1341,7 +1299,7 @@ function subscribeToCalendar(){
 
 subscribeToCalendar();
 
-renderCalendar();
+render();
 
 </script>
 
